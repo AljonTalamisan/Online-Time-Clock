@@ -1,14 +1,117 @@
+<?php
+// Include config file
+require_once "config.php";
+ 
+// Define variables and initialize with empty values
+$username = $password = $confirm_password = "";
+$username_err = $password_err = $confirm_password_err = "";
+ 
+// Processing form data when form is submitted
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+ 
+    // Validate username
+    if(empty(trim($_POST["username"]))){
+        $username_err = "Please enter a username.";
+    } elseif(!preg_match('/^[a-zA-Z0-9_]+$/', trim($_POST["username"]))){
+        $username_err = "Username can only contain letters, numbers, and underscores.";
+    } else{
+        // Prepare a select statement
+        $sql = "SELECT id FROM users WHERE username = ?";
+        
+        if($stmt = mysqli_prepare($link, $sql)){
+            // Bind variables to the prepared statement as parameters
+            mysqli_stmt_bind_param($stmt, "s", $param_username);
+            
+            // Set parameters
+            $param_username = trim($_POST["username"]);
+            
+            // Attempt to execute the prepared statement
+            if(mysqli_stmt_execute($stmt)){
+                /* store result */
+                mysqli_stmt_store_result($stmt);
+                
+                if(mysqli_stmt_num_rows($stmt) == 1){
+                    $username_err = "This username is already taken.";
+                } else{
+                    $username = trim($_POST["username"]);
+                }
+            } else{
+                echo "Oops! Something went wrong. Please try again later.";
+            }
+
+            // Close statement
+            mysqli_stmt_close($stmt);
+        }
+    }
+    
+    // Validate password
+    if(empty(trim($_POST["password"]))){
+        $password_err = "Please enter a password.";     
+    } elseif(strlen(trim($_POST["password"])) < 6){
+        $password_err = "Password must have atleast 6 characters.";
+    } else{
+        $password = trim($_POST["password"]);
+    }
+    
+    // Validate confirm password
+    if(empty(trim($_POST["confirm_password"]))){
+        $confirm_password_err = "Please confirm password.";     
+    } else{
+        $confirm_password = trim($_POST["confirm_password"]);
+        if(empty($password_err) && ($password != $confirm_password)){
+            $confirm_password_err = "Password did not match.";
+        }
+    }
+    
+    // Check input errors before inserting in database
+    if(empty($username_err) && empty($password_err) && empty($confirm_password_err)){
+        
+        // Prepare an insert statement
+        $sql = "INSERT INTO users (username, password) VALUES (?, ?)";
+         
+        if($stmt = mysqli_prepare($link, $sql)){
+            // Bind variables to the prepared statement as parameters
+            mysqli_stmt_bind_param($stmt, "ss", $param_username, $param_password);
+            
+            // Set parameters
+            $param_username = $username;
+            $param_password = password_hash($password, PASSWORD_DEFAULT); // Creates a password hash
+            
+            // Attempt to execute the prepared statement
+            if(mysqli_stmt_execute($stmt)){
+                // Redirect to login page
+                header("location: login.php");
+            } else{
+                echo "Oops! Something went wrong. Please try again later.";
+            }
+
+            // Close statement
+            mysqli_stmt_close($stmt);
+        }
+    }
+    
+    // Close connection
+    mysqli_close($link);
+}
+?>
+ 
 <!DOCTYPE html>
-<html>
-<link rel="stylesheet" href="w3.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
-
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
-<!--- Responsive ---->	
-<meta name="viewport" content="width=device-width, initial-scale=1">
- <style>
-.content {
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="w3.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+	<script src="jquery-3.5.1.min.js"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <style>
+        body{ font: 14px sans-serif; }
+        .wrapper{ width: 360px; padding: 20px; }
+		
+		
+		.content {
   max-width: 800px;
   margin: auto;
   padding: 10px;
@@ -30,23 +133,32 @@ footer {
    color: white;
    text-align: center;
 }
-body {
-    margin-bottom:120px;
-}
 .center {
   display: block;
   margin-left: auto;
   margin-right: auto;
   width: 50%;
 }
-</style>	
-<title>Fullybooked Online Time Clock</title> 	
-<body class="w3-theme-l2">
-<script src="hhttps://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+h1
+{
+	margin:0px;
+	margin-top:40px;
+	color:#8181F7;
+	font-size:45px;
+}
+#date
+{
+	color:gray;
+}
+#time
+{
+	color:darkred;
+}
+    </style>
 	
 	
-<!----------------------------------------------------- Header Design -------------------------------------------------------------------------------->	
-
+</head>
+<body>
 	<div class="w3-container w3-2019-orange-tiger content" style='background-color:#f2552c' id="top">
 		<img src="../FBlogo.png" width="100" height="50" class="center" />
 		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
@@ -54,186 +166,38 @@ body {
 	
 	<p></p>
 	
-	<div class="w3-container content">
-	<h1 class="w3-center w3-padding w3-red w3-opacity-min">Register Company</h1>
-	</div>
-<!----------------------------------------------------- Form Where your register the Company's Name -------------------------------------------------------------------------------->	
-	
-<div class="ui inverted container segment text"><br>
-<form name="Company Form" class="w3-container" method="post">
-
-	<p><label><b>Company Name: </b><b class="w3-text-red">*</b></label></p>
-		<input type=text name="company_name" class="w3-input w3-border w3-round-large" required placeholder="Company Name" id="company_name"><br>
-	
-	<p></p>
-	<input class="ui orange button basic submit" name="submit" type="submit" value="Register Company" style='background-color:#f2552c'>
-</form>
-</div>
-	<div class="w3-container"><p></p></div>
-<p></p>
-
-	
-<!----------------------------------------------------- PHP CODE For Company Name Registration -------------------------------------------------------------------------------->	
-	
-<?php
-
-include 'db_con.php';
-
-$conn = OpenCon();
-
-if(isset($_POST['submit'])){ // Fetching variables of the form which travels in URL
-$company = mysqli_real_escape_string($conn, $_POST['company_name']);
-    
-//check if the name is already been registered on database
-$sqlcheck = "SELECT * from tb_comp_name where Comp_Name = '$company'";	
-$resultcheck = mysqli_query($conn, $sqlcheck); 	
-	
-if (mysqli_num_rows($resultcheck) > 0) {
-
-?>
-	<script> 
-swal({
-text: "This Company Name had already been Registered!",
-icon: "error",
-});
- 
-	</script>
-	
-<?php
-	
-  }
-	
-else
-{
-$sql = "insert into tb_comp_name(Comp_Name) values ('$company')";
-
-
-if (mysqli_query($conn, $sql))
-{	
-?>
-	<script> 
-swal({
-title: "SUCCESS",
-text: "Company Details Registered Successfully!",
-icon: "success"
-});
-	</script>
-	
-<?php
-} 
-	
-else 
-{
-  echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-}
-}
-}
-
-?>
-	
-<!-----------------------------------------------------END:  PHP CODE For Company Name Registration -------------------------------------------------------------------------------->	
-	
-<!----------------------------------------------------- Form for Registering Employees on a specific Company -------------------------------------------------------------------------------->	
-
-	<p></p>
-	
-	<div class="w3-container content">
-	<h1 class="w3-center w3-padding w3-red w3-opacity-min">Register Employees</h1>
-	</div>
+    <div class="wrapper w3-container content">
+        <h2>Sign Up</h2>
+        <p>Please fill this form to create an account.</p>
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $username; ?>">
+                <span class="invalid-feedback"><?php echo $username_err; ?></span>
+            </div>    
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $password; ?>">
+                <span class="invalid-feedback"><?php echo $password_err; ?></span>
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" name="confirm_password" class="form-control <?php echo (!empty($confirm_password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $confirm_password; ?>">
+                <span class="invalid-feedback"><?php echo $confirm_password_err; ?></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="Submit">
+            </div>
+            <p>Already have an account? <a href="login.php" class="w3-text-grey">Login here</a>.</p>
+        </form>
+    </div>   
 	
 	
-<?php
-	
-$set = "SELECT Comp_Name from tb_comp_name"; // 
-$resultset = mysqli_query($conn, $set);
-	
-?>
-	
-<div class="ui inverted container segment text"><br>
-<form name="Employee Form" class="w3-container" method="post">
-
-	<p><label><b>Choose Company Name: </b><b class="w3-text-red">*</b></label></p>
-			   <input type="search" list="company_list" class="w3-input w3-border w3-round-large" name="company_list" placeholder="Choose Company Name">
-			<datalist id='company_list'>
-				<?php
-       				while ($row = $resultset->fetch_assoc())
-       					{
-						
-         					echo '<option value="'.$row['Comp_Name'].'"></option>';
-						
-						}
-				?>
-			</datalist>
-	<p></p>
-	
-	<p><label><b>Employee Name: </b><b class="w3-text-red">*</b></label></p>
-		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required placeholder="Employee Name" id="employee_name"><br>
-	
-	<input class="ui orange button basic submit" name="submit2" type="submit" value="Register Employee" style='background-color:#f2552c'>
-</form>
-</div>
-	<div class="w3-container"><p></p></div>
-<p></p>
-
-	
-<!----------------------------------------------------- PHP CODE For Employee's Name Registration -------------------------------------------------------------------------------->	
-	
-<?php
-
-if(isset($_POST['submit2'])){ // Fetching variables of the form which travels in URL
-$companyname = mysqli_real_escape_string($conn, $_POST['company_list']);
-$employeename = mysqli_real_escape_string($conn, $_POST['employee_name']);
-    
-//check if the name is already been registered on database
-$sqlcheckemployee = "SELECT * from tb_user where Comp_Name = '$companyname' and Username = '$employeename'";	
-$result = mysqli_query($conn, $sqlcheckemployee); 	
-	
-if (mysqli_num_rows($result) > 0) {
-
-?>
-	<script> 
-swal({
-text: "This Employee had already been registered with this Company!",
-icon: "error",
-});
- 
-	</script>
-	
-<?php
-	
-  }
-	
-else
-{
-$sql = "insert into tb_user(Comp_Name, Username) values ('$companyname', '$employeename')";
-
-
-if (mysqli_query($conn, $sql))
-{	
-?>
-	<script> 
-swal({
-title: "SUCCESS",
-text: "Employee Details Registered Successfully!",
-icon: "success"
-});
-	</script>
-	
-<?php
-} 
-	
-else 
-{
-  echo "Error: " . $sql . "<br>" . mysqli_error($conn);
-}
-}
-}
-
-?>	
-	
-<p></p>	
 <footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
+	<a href="dashboard.php" class="btn btn-warning w3-button">Dashboard</a>
+	<a href="register.php" class="btn btn-warning w3-button">Sign-Up</a>
+	<a href="registration.php" class="btn btn-warning w3-button">Register Employee</a>
 </footer>
 </body>
 </html>
