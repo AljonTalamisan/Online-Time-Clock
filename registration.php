@@ -63,7 +63,7 @@ body {
 <form name="Company Form" class="w3-container" method="post">
 
 	<p><label><b>Company Name: </b><b class="w3-text-red">*</b></label></p>
-		<input type=text name="company_name" class="w3-input w3-border w3-round-large" required placeholder="Company Name" id="company_name"><br>
+		<input type=text name="company_name" class="w3-input w3-border w3-round-large" required placeholder="Company Name " id="company_name"><br>
 	
 	<p></p>
 	<input class="ui orange button basic submit" name="submit" type="submit" value="Register Company" style='background-color:#f2552c'>
