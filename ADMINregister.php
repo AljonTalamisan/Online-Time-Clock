@@ -3,8 +3,8 @@
 require_once "config.php";
  
 // Define variables and initialize with empty values
-$username = $password = $confirm_password = $department = "";
-$username_err = $password_err = $confirm_password_err = $department_err = "";
+$username = $password = $confirm_password = "";
+$username_err = $password_err = $confirm_password_err = "";
  
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -62,26 +62,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $confirm_password_err = "Password did not match.";
         }
     }
-	
-	    // Validate department
-    if(empty(trim($_POST["department"]))){
-        $department_err = "Please select a Department.";
-    } else{
-        $department = trim($_POST["department"]);
-    }
     
     // Check input errors before inserting in database
     if(empty($username_err) && empty($password_err) && empty($confirm_password_err)){
         
         // Prepare an insert statement
-        $sql = "INSERT INTO tb_user (Comp_Name, Username, Password) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO tb_user (Username, Password) VALUES (?, ?)";
          
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "sss", $param_department, $param_username, $param_password);
+            mysqli_stmt_bind_param($stmt, "ss", $param_username, $param_password);
             
             // Set parameters
-			$param_department = $department;
             $param_username = $username;
             $param_password = password_hash($password, PASSWORD_DEFAULT); // Creates a password hash
             
@@ -178,48 +170,24 @@ h1
         <h2>Sign Up</h2>
         <p>Please fill this form to create an account.</p>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-			<?php
-	
-			$set = "SELECT Comp_Name from tb_comp_name"; // 
-			$resultset = mysqli_query($link, $set);
-	
-			?>
-			
-			<div class="form-group">
-				<label>Department</label>		
-			   	<input type="search" list="company_list" class="form-control" name="department" placeholder="Choose Department" required>
-				
-				<datalist id='company_list'>
-				<?php
-       				while ($row = $resultset->fetch_assoc())
-       					{
-						
-         					echo '<option value="'.$row['Comp_Name'].'"></option>';
-						
-						}
-				?>
-				</datalist>
-			<p></p>
-			</div>
             <div class="form-group">
                 <label>Username</label>
-                <input type="text" required name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $username; ?>">
+                <input type="text" name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $username; ?>">
                 <span class="invalid-feedback"><?php echo $username_err; ?></span>
             </div>    
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" required name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $password; ?>">
+                <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $password; ?>">
                 <span class="invalid-feedback"><?php echo $password_err; ?></span>
             </div>
             <div class="form-group">
                 <label>Confirm Password</label>
-                <input type="password" required name="confirm_password" class="form-control <?php echo (!empty($confirm_password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $confirm_password; ?>">
+                <input type="password" name="confirm_password" class="form-control <?php echo (!empty($confirm_password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $confirm_password; ?>">
                 <span class="invalid-feedback"><?php echo $confirm_password_err; ?></span>
             </div>
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">
             </div>
-		
             <p>Already have an account? <a href="login.php" class="w3-text-grey">Login here</a>.</p>
         </form>
     </div>   
@@ -227,8 +195,11 @@ h1
 	
 <footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-	<a href="dashboard.php" class="btn btn-warning w3-button">Dashboard</a>
-	<a href="attendance.php" class="btn btn-warning w3-button">Clock In</a>
+	<a href="reset-password.php" class="btn btn-warning w3-button">Reset Password</a>
+	<a href="ADMINdashboard.php" class="btn btn-warning w3-button">Dashboard</a>
+	<a href="ADMINlogout.php" class="btn btn-danger ml-3 w3-button">Sign Out</a>
+	<a href="ADMINattendance.php" class="btn btn-warning w3-button">Clock In</a>
+	<a href="RegularRegister.php" class="btn btn-warning w3-button">Register Regular User</a>
 </footer>
 </body>
 </html>

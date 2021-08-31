@@ -227,8 +227,12 @@ h1
 	
 <footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-	<a href="dashboard.php" class="btn btn-warning w3-button">Dashboard</a>
-	<a href="attendance.php" class="btn btn-warning w3-button">Clock In</a>
+        <a href="reset-password.php" class="btn btn-warning w3-button">Reset Password</a>
+		<a href="ADMINdashboard.php" class="btn btn-warning w3-button">Dashboard</a>
+        <a href="ADMINlogout.php" class="btn btn-danger ml-3 w3-button">Sign Out</a>
+		<a href="ADMINattendance.php" class="btn btn-warning w3-button">Clock In</a>
+		<a href="ADMINregister.php" class="btn btn-warning w3-button">Create Admin Account</a>
+	
 </footer>
 </body>
 </html>

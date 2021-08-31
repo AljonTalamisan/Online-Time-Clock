@@ -4,7 +4,7 @@ session_start();
  
 // Check if the user is logged in, otherwise redirect to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: dashboard.php");
+    header("location: ADMINdashboard.php");
     exit;
 }
  
@@ -54,7 +54,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             if(mysqli_stmt_execute($stmt)){
                 // Password updated successfully. Destroy the session, and redirect to login page
                 session_destroy();
-                header("location: dashboard.php");
+                header("location: ADMINdashboard.php");
                 exit();
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
@@ -155,7 +155,7 @@ h1
             </div>
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">
-                <a class="btn btn-link ml-2 w3-text-grey" href="dashboard.php">Cancel</a>
+                <a class="btn btn-link ml-2 w3-text-grey" href="ADMINdashboard.php">Cancel</a>
             </div>
         </form>
     </div> 

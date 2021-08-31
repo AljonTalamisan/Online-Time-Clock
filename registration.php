@@ -236,9 +236,11 @@ else
 <p></p>
 <footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-	<a href="dashboard.php" class="btn btn-warning w3-button">Dashboard</a>
+	<a href="ADMINdashboard.php" class="btn btn-warning w3-button">Dashboard</a>
 	<a href="register.php" class="btn btn-warning w3-button">Sign-Up</a>
+	<a href="login.php" class="btn btn-warning w3-button">Sign-In</a>
 	<a href="registration.php" class="btn btn-warning w3-button">Register Employee</a>
+	<a href="ADMINattendance.php" class="btn btn-warning w3-button">Clock In</a>
 </footer>
 </body>
 </html>

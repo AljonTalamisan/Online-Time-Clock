@@ -1,13 +1,3 @@
-<?php
-// Initialize the session
-session_start();
- 
-// Check if the user is logged in, if not then redirect him to login page
-if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: login.php");
-    exit;
-}
-?>
 <!DOCTYPE html>
 <html>
 <link rel="stylesheet" href="w3.css">
@@ -131,7 +121,7 @@ echo '<input name="time" type="hidden" value= "' . $dm . '">';
 	<p></p>
 	
 	<p><label><b>Employee Name: </b><b class="w3-text-red">*</b></label></p>
-		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required placeholder="Employee Name" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username']) ?>"><br>
+		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required placeholder="Employee Name" id="employee_name" onblur="myFunction()"><br>
 	
 	<input class="ui orange button basic submit" name="submit2" type="submit" value="Clock In" style='background-color:#f2552c' id="submit2">
 	<input class="ui orange button basic submit" name="submit3" type="submit" value="Clock Out" style='background-color:#f2552c' id="submit3">
@@ -322,7 +312,6 @@ function myFunction() {
 <footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
 	<a href="dashboard.php" class="btn btn-warning w3-button">Dashboard</a>
-	<a href="logout.php" class="btn btn-warning w3-button">Sign Out</a>
 </footer>
 </body>
 </html>

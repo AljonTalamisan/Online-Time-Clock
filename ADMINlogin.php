@@ -4,7 +4,7 @@ session_start();
  
 // Check if the user is already logged in, if yes then redirect him to welcome page
 if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
-    header("location: dashboard.php");
+    header("location: ADMINdashboard.php");
     exit;
 }
  
@@ -35,7 +35,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT User_ID, Username, Password FROM tb_user WHERE Username = ?";
+        $sql = "SELECT id, username, password FROM users WHERE username = ?";
         
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
@@ -60,11 +60,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             
                             // Store data in session variables
                             $_SESSION["loggedin"] = true;
-                            $_SESSION["User_ID"] = $id;
-                            $_SESSION["Username"] = $username;                            
+                            $_SESSION["id"] = $id;
+                            $_SESSION["username"] = $username;                            
                             
                             // Redirect user to welcome page
-                            header("location: dashboard.php");
+                            header("location: ADMINdashboard.php");
                         } else{
                             // Password is not valid, display a generic error message
                             $login_err = "Invalid username or password.";
@@ -93,7 +93,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <head>
     <meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login</title>
+    <title>Admin Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="w3.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
@@ -158,7 +158,7 @@ h1
 	<p></p>
 	
     <div class="wrapper w3-container content">
-        <h2>Login</h2>
+        <h2>Admin Login</h2>
         <p>Please fill in your credentials to login.</p>
 
         <?php 
@@ -181,13 +181,12 @@ h1
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Login">
             </div>
+            <p>Don't have an account? <a href="register.php" class="w3-text-grey">Sign up now</a>.</p>
         </form>
     </div>
 	
 	<footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-	<a href="attendance.php" class="btn btn-warning w3-button">Clock In</a>
-	<a href="dashboard.php" class="btn btn-warning w3-button">Dashboard</a>
 </footer>	
 </body>
 </html>
