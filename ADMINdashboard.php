@@ -1,10 +1,10 @@
 <?php
 // Initialize the session
 session_start();
- 
+
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: ADMINlogin.php");
+    header("location: index.php");
     exit;
 }
 ?>
@@ -17,7 +17,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 <script type="text/javascript" src="tableExport/jquery.base64.js"></script>
 <script src="js/export.js"></script>
 <script src="js/export2.js"></script>
-<!--- Responsive ---->	
+
+<!--- Responsive ---->
 <meta name="viewport" content="width=device-width, initial-scale=1">
  <style>
 .content {
@@ -33,7 +34,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
   padding: 10px;
 }
 table.center {
-  margin-left: auto; 
+  margin-left: auto;
   margin-right: auto;
 }
 footer {
@@ -54,41 +55,46 @@ body {
     margin-bottom:100px;
 }
 
-</style>	
-<title>FullyBooked Dashboard</title> 	
+</style>
+<title>FullyBooked Dashboard</title>
 <body class="w3-theme-l2" id="top">
 
 <?php
-	
+
 include 'db_con.php';
-	
+
 $conn = OpenCon();
-	
-$chooseset = "SELECT Comp_Name from tb_comp_name"; // 
+
+$chooseset = "SELECT Comp_Name from tb_comp_name";
 $resultsetchoose = mysqli_query($conn, $chooseset);
-	
-$choosename = "SELECT Username from tb_user"; // 
+
+$choosename = "SELECT * from tb_user";
 $resultname = mysqli_query($conn, $choosename);
-	
+
 ?>
-<!------------------ Background Design for the title ------------------>	
+<!------------------ Background Design for the title ------------------>
 <div class="w3-container w3-2019-orange-tiger content2" style='background-color:#f2552c'>
-	<img src="../FBlogo.png" width="100" height="60" class="center2" />
-<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">FullyBooked Time Track Dashboard</h2>
-<h1 class="w3-center w3-padding w3-black w3-opacity-min">REPORT</h1>
+  <img src="../FBlogo.png" width="100" height="60" class="center2" />
+  <h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">FullyBooked Time Track Dashboard</h2>
+  <h1 class="w3-center w3-padding w3-black w3-opacity-min">REPORT</h1>
 </div>
-<!------------------ Design for Selecting a Specific Company ----------------------->	
+<!------------------ Design for Selecting a Specific Company ----------------------->
 <div class="w3-container content">
-<p class="w3-center w3-medium w3-black w3-padding">SELECT COMPANY NAME</p>
+<p class="w3-center w3-medium w3-black w3-padding">SELECT DEPARTMENT (All Records of Employees within the selected Department name)</p>
 <form name="indexForm2" class="w3-container" method="post">
-<input type="search" list="mylist3" class="w3-input w3-border w3-round-large" name="comp" placeholder="Pick a Company" onkeyup='saveValue(this);' id="comp_name">
+  <label>Date:</label>
+   <input type="date" class="form-control" placeholder="Start"  name="dateA"/ required>
+   <label>To</label>
+   <input type="date" class="form-control" placeholder="End"  name="dateB"/ required>
+   <p></p>
+<input type="search" list="mylist3" class="w3-input w3-border w3-round-large" name="comp" placeholder="Department" onkeyup='saveValue(this);' id="comp_name" required>
 			<datalist id='mylist3'>
 				<?php
        				while ($row = $resultsetchoose->fetch_assoc())
        					{
-						
+
          					echo '<option value="'.$row['Comp_Name'].'"></option>';
-						
+
 						}
 				?>
 			</datalist>
@@ -101,10 +107,23 @@ $resultname = mysqli_query($conn, $choosename);
 
 if(isset($_POST['submit2'])) {
 
+  $dateA = date("Y-m-d", strtotime($_POST['dateA']));
+  $dateB = date("Y-m-d", strtotime($_POST['dateB']));
+
 $compname = $_POST['comp'];
-	
-$comp = "SELECT Track_ID, Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In, DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, Hours from tb_user_track where Comp_Name = '$compname'";
+
+$comp = "SELECT Track_ID, Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In, DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, Hours from tb_user_track where Comp_Name = '$compname' AND Date BETWEEN '$dateA' AND '$dateB'";
 $resultset = mysqli_query($conn, $comp);
+$number_of_results = mysqli_num_rows($resultset);
+
+if (mysqli_num_rows($resultset) > 0) {
+
+// Show the NAME of all employees who did not submit
+	echo "<div class='w3-container content w3-center'>";
+	echo "<div class='w3-center w3-medium'> <b>COMPANY SELECTED :</b> " . $compname . "</div>" . "<p></p>";
+	echo "<button onclick='myFunctionSet1()' class='w3-button w3-border w3-hover-deep-orange'>HIDE / SHOW</button>";
+	echo "</div>";
+	echo "<div class='w3-container content' id='myDIVset1'>";
 ?>
 <table border='1' class='center w3-table w3-striped' id='dataTable'>
 			<tr>
@@ -114,22 +133,12 @@ $resultset = mysqli_query($conn, $comp);
 			<th>DATE</th>
 			<th>TIME IN</th>
 			<th>TIME OUT</th>
-			<th>HOURS</th>	
+			<th>HOURS</th>
 			<td>Edit</td>
 			</tr>
- 
+
 <p></p>
 <?php
-	
-if (mysqli_num_rows($resultset) > 0) {
-
-// Show the NAME of all employees who did not submit
-	echo "<div class='w3-container content w3-center'>";
-	echo "<div class='w3-center w3-medium'> <b>COMPANY SELECTED :</b> " . $compname . "</div>" . "<p></p>";
-	echo "<button onclick='myFunctionSet1()' class='w3-button w3-border w3-hover-deep-orange'>HIDE / SHOW</button>";
-	echo "</div>";
-	echo "<div class='w3-container content' id='myDIVset1'>";
-
     while($row = mysqli_fetch_assoc($resultset)) {
 ?>
        <tr>
@@ -142,13 +151,24 @@ if (mysqli_num_rows($resultset) > 0) {
 		<td><small><?php echo $row['Hours']; ?></small></td>
 		<td class="w3-text-red"><small><a href="edit.php?id=<?php echo $row['Track_ID']; ?>">Edit</a></small></td>
   		</tr>
-		
-<?php
-		echo "</div>";
-    }
+
+    <?php
+
+		}
+
+
+
 	?>
+
 	</table>
-	
+
+
+	<?php
+
+	echo "</div>";
+
+	?>
+
 		<div class="w3-dropdown-hover">
   		<button class="w3-button" style='background-color:#f2552c'>EXPORT</button>
   		<div class="w3-dropdown-content w3-bar-block w3-border">
@@ -157,29 +177,42 @@ if (mysqli_num_rows($resultset) > 0) {
 			<a  class="w3-bar-item w3-button dataExport" data-type="txt">TXT</a>
   		</div>
 	</div>
-	
+
 	<?php
-	
+
 }
-	
+
 }
-	
-?> 
-<!------------- PHP query for checking the date and displaying the result----------->	
-<p class="w3-center w3-medium w3-black w3-padding">SELECT A DATE</p>
+
+?>
+<!------------- PHP query for checking the date and displaying the result----------->
+<p class="w3-center w3-medium w3-black w3-padding">SELECT DATE RANGE (All Records within that Date Range)</p>
 <form name="indexForm" class="w3-container" method="post">
-<input type="date" name="today">
+           <label>Date:</label>
+            <input type="date" class="form-control" placeholder="Start"  name="date1"/>
+            <label>To</label>
+            <input type="date" class="form-control" placeholder="End"  name="date2"/>
+<!-----<input type="date" name="today">------>
 <input class="w3-btn submit" name="submit" type="submit" value="Next" style='background-color:#f2552c'>
 <p></p>
-</form>	
+</form>
 <?php
-	
-if(isset($_POST['today'])) {
-    $date = date('Y-m-d', strtotime($_POST['today']));
-	
-$sqldate = "SELECT Track_ID, Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In, DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, Hours from tb_user_track where Date='$date'";
+
+if(isset($_POST['submit'])) {
+
+$date1 = date("Y-m-d", strtotime($_POST['date1']));
+$date2 = date("Y-m-d", strtotime($_POST['date2']));
+
+$sqldate = "SELECT Track_ID, Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours from tb_user_track where Date BETWEEN '$date1' AND '$date2'";
 $resultdate = mysqli_query($conn, $sqldate);
-	
+
+	if (mysqli_num_rows($resultdate) >= 0) {
+    // output data of each row
+	echo "<div class='w3-container content w3-center'>";
+	echo "<div class='w3-center w3-medium'> <b>DATE SELECTED :</b> " . $date1 .' to: '. $date2 . "</div>" . "<p></p>";
+	echo "<button onclick='myFunctionSet2()' class='w3-button w3-border w3-hover-deep-orange'>HIDE / SHOW</button>";
+	echo "</div>";
+	echo "<div class='w3-container content' id='myDIVset2'>";
 ?>
 <table border='1' class='center w3-table w3-striped' id='dataTable'>
 			<tr>
@@ -189,23 +222,14 @@ $resultdate = mysqli_query($conn, $sqldate);
 			<th>DATE</th>
 			<th>TIME IN</th>
 			<th>TIME OUT</th>
-			<td>Edit</td>
+			<th>HOURS</th>
 			</tr>
- 
+
 <p></p>
 <?php
-	
-	if (mysqli_num_rows($resultdate) >= 0) {
-    // output data of each row
-	echo "<div class='w3-container content w3-center'>";
-	echo "<div class='w3-center w3-medium'> <b>DATE SELECTED :</b> " . $date . "</div>" . "<p></p>";
-	echo "<button onclick='myFunctionSet2()' class='w3-button w3-border w3-hover-deep-orange'>HIDE / SHOW</button>";
-	echo "</div>";
-	echo "<div class='w3-container content' id='myDIVset2'>";
 
-	
     while($row = mysqli_fetch_assoc($resultdate)) {
-		 
+
 ?>
        <tr>
 		<td><small><?php echo $row['Track_ID']; ?></small></td>
@@ -214,16 +238,22 @@ $resultdate = mysqli_query($conn, $sqldate);
 		<td><small><?php echo $row['Date']; ?></small></td>
 		<td><small><?php echo $row['Time_In']; ?></small></td>
 		<td><small><?php echo $row['Time_Out']; ?></small></td>
-		<td class="w3-text-red"><small><a href="edit.php?id=<?php echo $row['Track_ID']; ?>">Edit</a></small></td>
+		<td><small><?php echo $row['Hours']; ?></small></td>
   		</tr>
-		
-<?php
-    }
+
+    <?php
+
+		}
+
+	?>
+
+	</table>
+
+	<?php
 
 	echo "</div>";
-		?>
-</table>
-	
+
+	?>
 	<div class="w3-dropdown-hover">
   		<button class="w3-button" style='background-color:#f2552c'>EXPORT</button>
   		<div class="w3-dropdown-content w3-bar-block w3-border">
@@ -232,59 +262,62 @@ $resultdate = mysqli_query($conn, $sqldate);
 			<a  class="w3-bar-item w3-button dataExport" data-type="txt">TXT</a>
   		</div>
 	</div>
-	
+
 	<?php
-		
+
 	echo "<br>"."<p class='w3-center'>";
 	echo "</p>";
 
-	
+
 }
 }
-	
-?>	
-<!------------- PHP query for checking the specific employee and Date----------->	
-	
-<p class="w3-center w3-medium w3-black w3-padding">SELECT EMPLOYEE AND DATE</p>
+
+?>
+<!------------- PHP query for checking the specific employee and Date----------->
+
+<p class="w3-center w3-medium w3-black w3-padding">SELECT EMPLOYEE AND DATE (Specific Date Range for a specific employee)</p>
 <form name="indexForm2" class="w3-container" method="post">
 <input type="search" list="mylist4" class="w3-input w3-border w3-round-large" name="emp" placeholder="Select Employee" onkeyup='saveValue(this);' id="comp_name">
 			<datalist id='mylist4'>
 				<?php
-       				while ($row = $resultname->fetch_assoc())
-       					{
-						
-         					echo '<option value="'.$row['Username'].'"></option>';
-						
-						}
+		while($row = mysqli_fetch_array($resultname)) {
+		echo '<option value="'.$row['Username'].'"></option>';
+    }
 				?>
 			</datalist>
-<input type="date" name="today2">
+	<br>
+	        <label>Date:</label>
+            <input type="date" class="form-control" placeholder="Start"  name="date3"/>
+            <label>To</label>
+            <input type="date" class="form-control" placeholder="End"  name="date4"/>
+
 <input class="w3-btn submit" name="submit3" type="submit" value="Next" style='background-color:#f2552c'>
 <p></p>
-</form>		
+</form>
 
 <?php
 
 if(isset($_POST['submit3'])) {
 
-$date = date('Y-m-d', strtotime($_POST['today2']));	
+$date3 = date('Y-m-d', strtotime($_POST['date3']));
+$date4 = date('Y-m-d', strtotime($_POST['date4']));
 
 $empname = $_POST['emp'];
-	
-$comp = "SELECT Track_ID, Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In, DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, Hours from tb_user_track where Username = '$empname' AND Date='$date'"; 
-$resultset2 = mysqli_query($conn, $comp);
 
-	
+$sqldate2 = "SELECT Track_ID, Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours from tb_user_track where Date BETWEEN '$date3' AND '$date4' AND Username='$empname'";
+$resultset2 = mysqli_query($conn, $sqldate2);
+
+
 if (mysqli_num_rows($resultset2) > 0) {
 
 // Show the NAME of all employees who did not submit
 	echo "<div class='w3-container content w3-center'>";
-	echo "<div class='w3-center w3-medium'> <b>EMPLOYEE SELECTED :</b> " . $empname . "</div>" . "<p></p>";
-	echo "<div class='w3-center w3-medium'> <b>DATE SELECTED :</b> " . $date . "</div>" . "<p></p>";
+	echo "<div class='w3-center w3-medium'> <b>EMPLOYEE SELECTED :</b> " . $empname . "</div>" . "<br>";
+	echo "<div class='w3-center w3-medium'> <b>DATE SELECTED :</b> " . $date3 .' to: '. $date4 . "</div>" . "<p></p>";
 	echo "<button onclick='myFunctionSet3()' class='w3-button w3-border w3-hover-deep-orange'>HIDE / SHOW</button>";
 	echo "</div>";
 	echo "<div class='w3-container content' id='myDIVset3'>";
-	
+
 ?>
 <table border='1' class='center w3-table w3-striped' id='dataTable'>
 			<tr>
@@ -294,13 +327,14 @@ if (mysqli_num_rows($resultset2) > 0) {
 			<th>DATE</th>
 			<th>TIME IN</th>
 			<th>TIME OUT</th>
+			<th>HOURS</th>
 			<td>Edit</td>
 			</tr>
- 
+
 <p></p>
 <?php
     while($row = mysqli_fetch_assoc($resultset2)) {
-		
+
 ?>
        <tr>
 		<td><small><?php echo $row['Track_ID']; ?></small></td>
@@ -309,125 +343,43 @@ if (mysqli_num_rows($resultset2) > 0) {
 		<td><small><?php echo $row['Date']; ?></small></td>
 		<td><small><?php echo $row['Time_In']; ?></small></td>
 		<td><small><?php echo $row['Time_Out']; ?></small></td>
+		<td><small><?php echo $row['Hours']; ?></small></td>
 		<td class="w3-text-red"><small><a href="edit.php?id=<?php echo $row['Track_ID']; ?>">Edit</a></small></td>
   		</tr>
-		
-<?php
 
-    }
-	echo "</div>";
+    <?php
+
+		}
+
 	?>
+
 	</table>
-	
-	<div class="w3-dropdown-hover">
-  		<button class="w3-button" style='background-color:#f2552c'>EXPORT</button>
-  		<div class="w3-dropdown-content w3-bar-block w3-border">
-      		<a  class="w3-bar-item w3-button dataExport" data-type="csv">CSV</a>
-      		<a  class="w3-bar-item w3-button dataExport" data-type="excel">XLS</a>
-			<a  class="w3-bar-item w3-button dataExport" data-type="txt">TXT</a>
-  		</div>
-	</div>
-	
+
 	<?php
-	
-}
-	
-}
 
-	
-?> 
-<!------------- PHP query for checking an employee----------->
-
-<p class="w3-center w3-medium w3-black w3-padding">SELECT EMPLOYEE</p>
-<form name="indexForm2" class="w3-container" method="post">
-<input type="search" list="mylist4" class="w3-input w3-border w3-round-large" name="emp" placeholder="Select Employee" onkeyup='saveValue(this);' id="comp_name">
-			<datalist id='mylist4'>
-				<?php
-       				while ($row = $resultname->fetch_assoc())
-       					{
-						
-         					echo '<option value="'.$row['Username'].'"></option>';
-						
-						}
-				?>
-			</datalist>
-
-<input class="w3-btn submit" name="submit4" type="submit" value="Next" style='background-color:#f2552c'>
-<p></p>
-</form>		
-
-<?php
-
-if(isset($_POST['submit4'])) {
-
-
-$empname2 = $_POST['emp'];
-	
-$comp2 = "SELECT Track_ID, Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In, DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, Hours from tb_user_track where Username = '$empname2'"; 
-$resultset2 = mysqli_query($conn, $comp2);
-
-	
-if (mysqli_num_rows($resultset2) > 0) {
-
-// Show the NAME of all employees who did not submit
-	echo "<div class='w3-container content w3-center'>";
-	echo "<div class='w3-center w3-medium'> <b>EMPLOYEE SELECTED :</b> " . $empname2 . "</div>" . "<p></p>";
-	echo "<button onclick='myFunctionSet3()' class='w3-button w3-border w3-hover-deep-orange'>HIDE / SHOW</button>";
 	echo "</div>";
-	echo "<div class='w3-container content' id='myDIVset3'>";
-	
-?>
-<table border='1' class='center w3-table w3-striped' id='dataTable'>
-			<tr>
-			<th>ID</th>
-			<th>USERNAME</th>
-			<th>COMPANY NAME</th>
-			<th>DATE</th>
-			<th>TIME IN</th>
-			<th>TIME OUT</th>
-			<td>Edit</td>
-			</tr>
- 
-<p></p>
-<?php
-    while($row = mysqli_fetch_assoc($resultset2)) {
-		
-?>
-       <tr>
-		<td><small><?php echo $row['Track_ID']; ?></small></td>
-  		<td><small><?php echo $row['Username']; ?></small></td>
-		<td><small><?php echo $row['Comp_Name']; ?></small></td>
-		<td><small><?php echo $row['Date']; ?></small></td>
-		<td><small><?php echo $row['Time_In']; ?></small></td>
-		<td><small><?php echo $row['Time_Out']; ?></small></td>
-		<td class="w3-text-red"><small><a href="edit.php?id=<?php echo $row['Track_ID']; ?>">Edit</a></small></td>
-  		</tr>
-		
-<?php
 
-    }
-	echo "</div>";
 	?>
-	</table>
-	
+
 	<div class="w3-dropdown-hover">
-  		<button class="w3-button" style='background-color:#f2552c'>EXPORT</button>
-  		<div class="w3-dropdown-content w3-bar-block w3-border">
-      		<a  class="w3-bar-item w3-button dataExport" data-type="csv">CSV</a>
-      		<a  class="w3-bar-item w3-button dataExport" data-type="excel">XLS</a>
-			<a  class="w3-bar-item w3-button dataExport" data-type="txt">TXT</a>
-  		</div>
+	  <button class="w3-button" style='background-color:#f2552c'>EXPORT</button>
+	  <div class="w3-dropdown-content w3-bar-block w3-border">
+	    <a class="w3-bar-item w3-button dataExport" data-type="csv">CSV</a>
+	    <a class="w3-bar-item w3-button dataExport" data-type="excel">XLS</a>
+	    <a class="w3-bar-item w3-button dataExport" data-type="txt">TXT</a>
+	  </div>
 	</div>
-	</div>
+
 	<?php
-	
-}
-	
+
 }
 
-	
-?> 	
-	
+}
+
+
+?>
+<br><br>
+</div>
 <script>
 function myFunction() {
   var x = document.getElementById("myDIV");
@@ -437,7 +389,7 @@ function myFunction() {
     x.style.display = "none";
   }
 }
-	
+
 function myFunction2() {
   var x = document.getElementById("myDIV2");
   if (x.style.display === "none") {
@@ -446,7 +398,7 @@ function myFunction2() {
     x.style.display = "none";
   }
 }
-	
+
 function myFunction3() {
   var x = document.getElementById("myDIV3");
   if (x.style.display === "none") {
@@ -455,7 +407,7 @@ function myFunction3() {
     x.style.display = "none";
   }
 }
-	
+
 function myFunctionSet1() {
   var x = document.getElementById("myDIVset1");
   if (x.style.display === "none") {
@@ -479,8 +431,8 @@ function myFunctionSet3() {
   } else {
     x.style.display = "none";
   }
-}	
-	
+}
+
 </script>
 
 </body>

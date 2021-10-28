@@ -14,7 +14,11 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
 <script src="jquery-3.5.1.min.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
+<script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
 <!--- Responsive ---->	
 <meta name="viewport" content="width=device-width, initial-scale=1">
  <style>
@@ -101,9 +105,27 @@ date_default_timezone_set("Asia/Manila");
 $datenow = new DateTime(); // Date object using current date and time
 $dt=date('Y-m-d');
 $dm=date('H:i');
+
+$username=$_SESSION['Username'];		
 	
 $set = "SELECT Comp_Name from tb_comp_name"; // 
 $resultset = mysqli_query($conn, $set);
+
+$latest = "SELECT Action,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Track_ID = (SELECT Max(Track_ID) from tb_user_track) and Username = '$username'";
+$latestset = mysqli_query($conn, $latest);
+	
+	while($rowlatest = mysqli_fetch_assoc($latestset)) {
+	?>
+	<div class="w3-container content w3-light-gray w3-opacity-min">
+	<h3 class="w3-center "><b class="w3-text-black">STATUS: </b><b class="w3-text-blue"><?php echo $rowlatest['Action']; ?></b></h3>
+	<h3 class="w3-center "><b class="w3-text-black">TIME-IN: </b><b class="w3-text-green"><?php echo $rowlatest['Time_In']; ?></b></h3>
+	<h3 class="w3-center "><b class="w3-text-black">TIME-OUT: </b><b class="w3-text-red"><?php echo $rowlatest['Time_Out']; ?></b></h3>
+	</div>
+	<?php
+												  
+		}
+	
+	?>	
 	
 ?>
 
@@ -115,29 +137,19 @@ echo '<input name="date" type="hidden" value= "' . $dt . '">';
 echo '<input name="time" type="hidden" value= "' . $dm . '">';
 ?>
 	
-	<p><label><b>Choose Company Name: </b><b class="w3-text-red">*</b></label></p>
+	<p><label><b>Company Name: </b><b class="w3-text-red">*</b></label></p>
 	
-			   <input type="search" list="company_list" class="w3-input w3-border w3-round-large" name="company_list" placeholder="Choose Company Name">
-			<datalist id='company_list'>
-				<?php
-       				while ($row = $resultset->fetch_assoc())
-       					{
-						
-         					echo '<option value="'.$row['Comp_Name'].'"></option>';
-						
-						}
-				?>
-			</datalist>
+	<input type=text name="company_list" class="w3-input w3-border w3-round-large" required placeholder="Company Name" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Comp_Name']) ?>"><br>
 	<p></p>
 	
 	<p><label><b>Employee Name: </b><b class="w3-text-red">*</b></label></p>
-		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required placeholder="Employee Name" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['username']) ?>"><br>
+		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required placeholder="Employee Name" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username']) ?>"><br>
 	
-	<input class="ui orange button basic submit" name="submit2" type="submit" value="Clock In" style='background-color:#f2552c' id="submit2">
-	<input class="ui orange button basic submit" name="submit3" type="submit" value="Clock Out" style='background-color:#f2552c' id="submit3">
+	<input class="ui green button submit" name="submit2" type="submit" value="Clock In" id="submit2">
+	<input class="ui red button submit" name="submit3" type="submit" value="Clock Out" id="submit3">
 </form>
 </div>
-	<div class="w3-container"><p></p></div>
+	<br><br><br><br>
 <p></p>
 	
 <!----------------------------------------------------- PHP CODE For Employee's Clock In -------------------------------------------------------------------------------->	
@@ -201,7 +213,10 @@ swal({
 title: "SUCCESS",
 text: "Employee Successfully Clocked In!",
 icon: "success"
-});
+}).then(function(){ 
+   location.reload();
+   }
+);
 	</script>
 	
 <?php
@@ -246,7 +261,10 @@ swal({
 title: "SUCCESS",
 text: "Employee Successfully Clocked Out!",
 icon: "success"
-});
+}).then(function(){ 
+   location.reload();
+   }
+);
 	</script>
 	
 <?php
@@ -302,13 +320,19 @@ icon: "error",
       var min = d.getMinutes();
 	  var sec = d.getSeconds();
 		
-	  var hour = d.getHours();
-  	  var ampm = hour >= 12 ? 'PM' : 'AM';
-		hour = hour % 12;
-		hour = hour ? hour : 12; // the hour '0' should be '12'
+   var hour   = d.getHours();	
+   var minute = d.getMinutes();
+   var second = d.getSeconds();
+   var ap = "AM";
+   if (hour   > 11) { ap = "PM";             }
+   if (hour   > 12) { hour = hour - 12;      }
+   if (hour   == 0) { hour = 12;             }
+   if (hour   < 10) { hour   = "0" + hour;   }
+   if (minute < 10) { minute = "0" + minute; }
+   if (second < 10) { second = "0" + second; }
 	
 	  document.getElementById("date").innerHTML=day+", "+date+" "+month+" "+year;
-	  document.getElementById("time").innerHTML=hour+":"+min+":"+sec+" "+ampm;
+	  document.getElementById("time").innerHTML=hour+":"+minute+":"+second+" "+ap;
     }
   </script>
 

@@ -35,7 +35,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Validate credentials
     if(empty($username_err) && empty($password_err)){
         // Prepare a select statement
-        $sql = "SELECT id, username, password FROM users WHERE username = ?";
+        $sql = "SELECT User_ID, Username, Password FROM users WHERE Username = ?";
         
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
@@ -60,8 +60,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                             
                             // Store data in session variables
                             $_SESSION["loggedin"] = true;
-                            $_SESSION["id"] = $id;
-                            $_SESSION["username"] = $username;                            
+                            $_SESSION["User_ID"] = $id;
+                            $_SESSION["Username"] = $username;                            
                             
                             // Redirect user to welcome page
                             header("location: ADMINdashboard.php");
@@ -153,7 +153,11 @@ h1
 	<div class="w3-container w3-2019-orange-tiger content" style='background-color:#f2552c' id="top">
 		<img src="../FBlogo.png" width="100" height="50" class="center" />
 		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
+
+ 		<a href="index.php" class="ui green button w3-center">go to Regular Login</a>
+ 
 	</div>
+
 	
 	<p></p>
 	
@@ -181,7 +185,7 @@ h1
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Login">
             </div>
-            <p>Don't have an account? <a href="register.php" class="w3-text-grey">Sign up now</a>.</p>
+            <p>Don't have an account? <a href="ADMINRegister2.php" class="w3-text-grey">Sign up now</a>.</p>
         </form>
     </div>
 	

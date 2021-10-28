@@ -3,8 +3,8 @@
 require_once "config.php";
  
 // Define variables and initialize with empty values
-$username = $password = $confirm_password = "";
-$username_err = $password_err = $confirm_password_err = "";
+$username = $password = $confirm_password = $usertype ="";
+$username_err = $password_err = $confirm_password_err =  $usertype_err ="";
  
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -16,7 +16,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $username_err = "Username can only contain letters, numbers, and underscores.";
     } else{
         // Prepare a select statement
-        $sql = "SELECT User_ID FROM tb_user WHERE Username = ?";
+        $sql = "SELECT User_ID FROM users WHERE Username = ?";
         
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
@@ -62,25 +62,40 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $confirm_password_err = "Password did not match.";
         }
     }
+	
+		    // Validate department
+    if(empty(trim($_POST["department"]))){
+        $department_err = "Please select a Department.";
+    } else{
+        $department = trim($_POST["department"]);
+    }
     
+	if(empty(trim($_POST["usertype"]))){
+        $usertype_err = "Please select a Usertype.";
+    } else{
+        $usertype = trim($_POST["usertype"]);
+    }
+	
     // Check input errors before inserting in database
     if(empty($username_err) && empty($password_err) && empty($confirm_password_err)){
         
         // Prepare an insert statement
-        $sql = "INSERT INTO tb_user (Username, Password) VALUES (?, ?)";
+        $sql = "INSERT INTO tb_user (Comp_Name, Username, Password, Usertype) VALUES (?, ?, ?, ?)";
          
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "ss", $param_username, $param_password);
+            mysqli_stmt_bind_param($stmt, "ssss",$param_department, $param_username, $param_password, $param_usertype);
             
             // Set parameters
+			$param_department = $department;
+			$param_usertype = $usertype;
             $param_username = $username;
             $param_password = password_hash($password, PASSWORD_DEFAULT); // Creates a password hash
             
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
                 // Redirect to login page
-                header("location: login.php");
+                header("location: ADMINlogin.php");
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
             }
@@ -89,9 +104,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             mysqli_stmt_close($stmt);
         }
     }
-    
-    // Close connection
-    mysqli_close($link);
+   
 }
 ?>
  
@@ -170,25 +183,52 @@ h1
         <h2>Sign Up</h2>
         <p>Please fill this form to create an account.</p>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+			<?php
+	
+			$set = "SELECT Comp_Name from tb_comp_name"; // 
+			$resultset = mysqli_query($link, $set);
+	
+			?>
+			
+			<div class="form-group">
+				<label>Department</label>		
+			   	<input type="search" list="company_list" class="form-control" name="department" placeholder="Choose Department" required>
+				
+				<datalist id='company_list'>
+				<?php
+       				while ($row = $resultset->fetch_assoc())
+       					{
+						
+         					echo '<option value="'.$row['Comp_Name'].'"></option>';
+						
+						}
+				?>
+				</datalist>
+			<p></p>
+			</div>
             <div class="form-group">
                 <label>Username</label>
-                <input type="text" name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $username; ?>">
+                <input type="text" required name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $username; ?>">
                 <span class="invalid-feedback"><?php echo $username_err; ?></span>
             </div>    
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $password; ?>">
+                <input type="password" required name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $password; ?>">
                 <span class="invalid-feedback"><?php echo $password_err; ?></span>
             </div>
             <div class="form-group">
                 <label>Confirm Password</label>
-                <input type="password" name="confirm_password" class="form-control <?php echo (!empty($confirm_password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $confirm_password; ?>">
+                <input type="password" required name="confirm_password" class="form-control <?php echo (!empty($confirm_password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $confirm_password; ?>">
                 <span class="invalid-feedback"><?php echo $confirm_password_err; ?></span>
+            </div>
+		    <div class="form-group">
+                <input type="hidden" required name="usertype" class="form-control <?php echo (!empty($usertype_err_err)) ? 'is-invalid' : ''; ?>" value="admin">
+                <span class="invalid-feedback"><?php echo $usertype_err; ?></span>
             </div>
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">
             </div>
-            <p>Already have an account? <a href="login.php" class="w3-text-grey">Login here</a>.</p>
+	
         </form>
     </div>   
 	

@@ -4,21 +4,18 @@ session_start();
  
 // Check if the user is already logged in, if yes then redirect him to welcome page
 if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
-    header("location: dashboard.php");
+    header("location: attendance.php");
     exit;
 }
  
 // Include config file
 require_once "config.php";
- 
-// Define variables and initialize with empty values
 $username = $password = "";
 $username_err = $password_err = $login_err = "";
  
-// Processing form data when form is submitted
-if($_SERVER["REQUEST_METHOD"] == "POST"){
- 
-    // Check if username is empty
+if( isset($_POST['login_btn'])){  // someone click login btn
+	
+	    // Check if username is empty
     if(empty(trim($_POST["username"]))){
         $username_err = "Please enter username.";
     } else{
@@ -31,61 +28,60 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     } else{
         $password = trim($_POST["password"]);
     }
-    
-    // Validate credentials
-    if(empty($username_err) && empty($password_err)){
-        // Prepare a select statement
-        $sql = "SELECT User_ID, Username, Password FROM tb_user WHERE Username = ?";
-        
-        if($stmt = mysqli_prepare($link, $sql)){
-            // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "s", $param_username);
-            
-            // Set parameters
-            $param_username = $username;
-            
-            // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt)){
-                // Store result
-                mysqli_stmt_store_result($stmt);
-                
-                // Check if username exists, if yes then verify password
-                if(mysqli_stmt_num_rows($stmt) == 1){                    
-                    // Bind result variables
-                    mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password);
-                    if(mysqli_stmt_fetch($stmt)){
-                        if(password_verify($password, $hashed_password)){
-                            // Password is correct, so start a new session
-                            session_start();
-                            
-                            // Store data in session variables
-                            $_SESSION["loggedin"] = true;
-                            $_SESSION["User_ID"] = $id;
-                            $_SESSION["Username"] = $username;                            
-                            
-                            // Redirect user to welcome page
-                            header("location: dashboard.php");
-                        } else{
-                            // Password is not valid, display a generic error message
-                            $login_err = "Invalid username or password.";
-                        }
-                    }
-                } else{
-                    // Username doesn't exist, display a generic error message
-                    $login_err = "Invalid username or password.";
-                }
-            } else{
-                echo "Oops! Something went wrong. Please try again later.";
-            }
 
-            // Close statement
-            mysqli_stmt_close($stmt);
-        }
+    $username = $_POST['username']; 
+    //clean is the custom function to remove all harmful code
+    $password = $_POST['password'];
+
+
+    // run query to get db username & password i am using prepare stmt for more secure , you can use mysqli_fetch_array , but need to implement mysql_real_escape_string for sql injection
+
+    $stmt = mysqli_prepare($link,"SELECT User_ID,Comp_Name,Username,Password,Usertype FROM tb_user WHERE Username = ? ");
+
+    //$connection is your db connection 
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+
+    mysqli_stmt_bind_result($stmt, $bind_id,$bind_compname,$bind_username,$bind_password,$bind_usertype);
+
+    while (mysqli_stmt_fetch($stmt)) {
+		$compname = $bind_compname;
+        $db_username = $bind_username;
+        $db_password = $bind_password;
+        $usertype   = $bind_usertype;
     }
-    
-    // Close connection
-    mysqli_close($link);
+
+    //  do form validation           
+    if($username =="" or $password =="" ){
+        echo 'All Fileds Are Required'; 
+    }elseif( $username !== $db_username ){
+        echo 'username not existed';
+    }else{
+    if( password_verify($password, $db_password)){
+	session_start();
+    // assuming your using password_hash function to verify , or you can just use simply compare $password == db_password                                           
+    // if password_verify return true meaning correct password then save all necessary sessions
+	$_SESSION["loggedin"] = true;
+	$_SESSION["Comp_Name"] = $compname ;
+    $_SESSION['Username'] = $db_username ;
+    $_SESSION['Usertype'] = $usertype ;
+
+    // first method ->    header('Location: portal.php');      
+    // you can now direct to portal page{1st method } where all admin or normal user can view 
+    // or you can now do separate redirection (2nd method below )
+    // remember $user_role  will == 'admin' or 'normal_user'
+if( $usertype == 'admin' ){
+    header('Location: ADMINdashboard.php');
+}elseif(  $usertype == 'user'  ){
+    header('Location: dashboard.php');
 }
+
+    }else{
+       echo 'incorrect password';
+    }
+
+ }                                  
+    }  //  end of post request 
 ?>
  
 <!DOCTYPE html>
@@ -153,12 +149,13 @@ h1
 	<div class="w3-container w3-2019-orange-tiger content" style='background-color:#f2552c' id="top">
 		<img src="../FBlogo.png" width="100" height="50" class="center" />
 		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
+		 		<a href="ADMINlogin.php" class="ui green button w3-center">go to Admin Login</a>
 	</div>
 	
 	<p></p>
 	
     <div class="wrapper w3-container content">
-        <h2>Login</h2>
+        <h2>Regular Login</h2>
         <p>Please fill in your credentials to login.</p>
 
         <?php 
@@ -179,15 +176,13 @@ h1
                 <span class="invalid-feedback"><?php echo $password_err; ?></span>
             </div>
             <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Login">
+                <input type="submit" class="btn btn-primary" value="Login" name="login_btn">
             </div>
         </form>
     </div>
 	
 	<footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-	<a href="attendance.php" class="btn btn-warning w3-button">Clock In</a>
-	<a href="dashboard.php" class="btn btn-warning w3-button">Dashboard</a>
 </footer>	
 </body>
 </html>

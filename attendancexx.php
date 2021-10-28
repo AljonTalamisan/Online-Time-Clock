@@ -1,7 +1,7 @@
 <?php
 // Initialize the session
 session_start();
- 
+
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: index.php");
@@ -13,14 +13,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 <link rel="stylesheet" href="w3.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
 <script src="jquery-3.5.1.min.js"></script>
-<!--<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>-->
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="sweetalert2.all.min.js"></script>
-<script>
-    if ( window.history.replaceState ) {
-        window.history.replaceState( null, null, window.location.href );
-    }
-</script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 <!--- Responsive ---->	
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -93,6 +86,7 @@ h1
 	<div class="w3-container content">
 	<h2 class="w3-center" id="date" name="date"></h2>
 	<h2 class="w3-center" id="time" name="time"></h2>
+		
    	</div>
 	
 <!----------------------------------------------------- Form for Registering Employees on a specific Company -------------------------------------------------------------------------------->	
@@ -103,27 +97,23 @@ h1
 include 'db_con.php';
 
 $conn = OpenCon();
+
+$username=$_SESSION['Username'];	
 	
 date_default_timezone_set("Asia/Manila");	
 $datenow = new DateTime(); // Date object using current date and time
 $dt=date('Y-m-d');
-$dm=date('H:i');
-	
-$username=$_SESSION['Username'];	
+$dm=date('h:i');
 	
 $set = "SELECT Comp_Name from tb_comp_name"; // 
 $resultset = mysqli_query($conn, $set);
 
-$latest = "SELECT Action,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Track_ID = (SELECT Max(Track_ID) from tb_user_track) and Username = '$username'";
+$latest = "SELECT Action from tb_user_track where Track_ID = (SELECT Max(Track_ID) from tb_user_track) and Username = '$username'";
 $latestset = mysqli_query($conn, $latest);
 	
-	while($rowlatest = mysqli_fetch_assoc($latestset)) {
-	?>
-	<div class="w3-container content w3-light-gray w3-opacity-min">
-	<h3 class="w3-center "><b class="w3-text-black">STATUS: </b><b class="w3-text-blue"><?php echo $rowlatest['Action']; ?></b></h3>
-	<h3 class="w3-center "><b class="w3-text-black">TIME-IN: </b><b class="w3-text-green"><?php echo $rowlatest['Time_In']; ?></b></h3>
-	<h3 class="w3-center "><b class="w3-text-black">TIME-OUT: </b><b class="w3-text-red"><?php echo $rowlatest['Time_Out']; ?></b></h3>
-	</div>
+		while($rowlatest = mysqli_fetch_assoc($latestset)) {
+		?>
+	<h2 class="w3-center"><b class="w3-text-black">STATUS: </b><b class="w3-text-red"><?php echo $rowlatest['Action']; ?></b></h2>
 	<?php
 												  
 		}
@@ -136,11 +126,13 @@ $latestset = mysqli_query($conn, $latest);
 <?php	
 echo '<input name="date" type="hidden" value= "' . $dt . '">';
 echo '<input name="time" type="hidden" value= "' . $dm . '">';
+
+
 ?>
 	
-	<p><label><b>Company Name: </b><b class="w3-text-red">*</b></label></p>
+	<p><label><b>Choose Company Name: </b><b class="w3-text-red">*</b></label></p>
 	
-	<input type=text name="company_list" class="w3-input w3-border w3-round-large" required placeholder="Company Name" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Comp_Name']) ?>"><br>
+		<input type=text name="company_list" class="w3-input w3-border w3-round-large" required placeholder="Company Name" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Comp_Name']) ?>"><br>
 	<p></p>
 	
 	<p><label><b>Employee Name: </b><b class="w3-text-red">*</b></label></p>
@@ -150,7 +142,7 @@ echo '<input name="time" type="hidden" value= "' . $dm . '">';
 	<input class="ui red button submit" name="submit3" type="submit" value="Clock Out" id="submit3">
 </form>
 </div>
-	<br><br><br><br>
+	<div class="w3-container"><p></p></div>
 <p></p>
 	
 <!----------------------------------------------------- PHP CODE For Employee's Clock In -------------------------------------------------------------------------------->	
@@ -177,7 +169,7 @@ if (mysqli_num_rows($result) > 0) {
 
 ?>
 	<script> //popup message had already clocked in
-swal.fire({
+swal({
 text: "This Employee had already Clocked In!",
 icon: "error",
 });
@@ -192,7 +184,7 @@ else if (mysqli_num_rows($result2) == 0) {
 	
 	?>
 	<script> //popup message employee not yet registered
-swal.fire({
+swal({
 text: "This Employee is not yet Registered!",
 icon: "error",
 });
@@ -210,14 +202,11 @@ if (mysqli_query($conn, $sql))
 {	
 ?>
 	<script> 
-swal.fire({
+swal({
 title: "SUCCESS",
 text: "Employee Successfully Clocked In!",
 icon: "success"
-}).then(function(){ 
-   location.reload();
-   }
-);
+});
 	</script>
 	
 <?php
@@ -242,7 +231,7 @@ if(isset($_POST['submit3'])){ // Fetching variables of the form which travels in
 $companyname2 = mysqli_real_escape_string($conn, $_POST['company_list']);
 $employeename2 = mysqli_real_escape_string($conn, $_POST['employee_name']);
 $date2 = date('Y-m-d');
-$time2 = date('H:i');
+$time2 = date('h:i A');
 
 //check if the employee had already clocked in today
 $sqlout = "SELECT Comp_Name, Username, Date, Action, Time_Out FROM tb_user_track WHERE Date = '$date2' AND Username = '$employeename2' AND Action = 'IN'";	
@@ -251,21 +240,18 @@ $result = mysqli_query($conn, $sqlout);
 if (mysqli_num_rows($result) > 0) {
 
 $sql = "UPDATE tb_user_track SET Time_Out= '$time2', Action = 'OUT' WHERE Date = '$date2' AND Username = '$employeename2' AND ACTION = 'IN'";
-$sqlcalculate  = "UPDATE tb_user_track SET Hours = TIMEDIFF(Time_Out, Time_In) WHERE Date = '$date2' AND Username = '$employeename2' AND ACTION = 'OUT'";
-	
+$sqlcalculate  = "UPDATE tb_user_track SET Hours = TIMEDIFF(Time_Out, strtotime(Time_In) WHERE Date = '$date2' AND Username = '$employeename2' AND ACTION = 'OUT'";
+
 if (mysqli_query($conn, $sql))
 {
 	if(mysqli_query($conn, $sqlcalculate)){
 ?>
 	<script> 
-swal.fire({
+swal({
 title: "SUCCESS",
 text: "Employee Successfully Clocked Out!",
 icon: "success"
-}).then(function(){ 
-   location.reload();
-   }
-);
+});
 	</script>
 	
 <?php
@@ -277,7 +263,7 @@ else {
 	
 ?>
 	<script> //popup message had already clocked in
-swal.fire({
+swal({
 text: "This Employee had already Clocked Out!",
 icon: "error",
 });
@@ -318,9 +304,6 @@ icon: "error",
 	  var dayarr =["Sun","Mon","Tues","Wed","Thurs","Fri","Sat"];
 	  day=dayarr[day];
 	  
-      var min = d.getMinutes();
-	  var sec = d.getSeconds();
-		
    var hour   = d.getHours();	
    var minute = d.getMinutes();
    var second = d.getSeconds();

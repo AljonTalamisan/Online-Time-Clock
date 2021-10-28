@@ -3,8 +3,8 @@
 require_once "config.php";
  
 // Define variables and initialize with empty values
-$username = $password = $confirm_password = $department = "";
-$username_err = $password_err = $confirm_password_err = $department_err = "";
+$username = $password = $confirm_password = "";
+$username_err = $password_err = $confirm_password_err = "";
  
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -62,14 +62,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $confirm_password_err = "Password did not match.";
         }
     }
-	
-	    // Validate department
+    	    // Validate department
     if(empty(trim($_POST["department"]))){
         $department_err = "Please select a Department.";
     } else{
         $department = trim($_POST["department"]);
     }
-    
     // Check input errors before inserting in database
     if(empty($username_err) && empty($password_err) && empty($confirm_password_err)){
         
@@ -78,7 +76,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
          
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "sss", $param_department, $param_username, $param_password);
+            mysqli_stmt_bind_param($stmt, "sss", $param_username, $param_password);
             
             // Set parameters
 			$param_department = $department;
@@ -88,7 +86,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
                 // Redirect to login page
-                header("location: index.php");
+                header("location: ADMINlogin.php");
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
             }
@@ -219,16 +217,13 @@ h1
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">
             </div>
-		
-            <p>Already have an account? <a href="login.php" class="w3-text-grey">Login here</a>.</p>
+	
         </form>
     </div>   
 	
 	
-<footer class="w3-container" style='background-color:#f2552c'><p></p>
+	<footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-	<a href="dashboard.php" class="btn btn-warning w3-button">Dashboard</a>
-	<a href="attendance.php" class="btn btn-warning w3-button">Clock In</a>
 </footer>
 </body>
 </html>

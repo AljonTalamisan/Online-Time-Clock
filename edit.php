@@ -5,7 +5,7 @@ $conn = OpenCon();
 
 $id = $_GET['id']; // get id through query string
 
-$qry = mysqli_query($conn,"select * from tb_user_track where Track_ID='$id'"); // select query
+$qry = mysqli_query($conn,"select Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') from tb_user_track where Track_ID='$id'"); // select query
 
 $data = mysqli_fetch_array($qry); // fetch data
 
@@ -20,11 +20,16 @@ if(isset($_POST['update'])) // when click on Update button
     $edit = "update tb_user_track set Username='$Username', Comp_Name='$Comp_Name', Date='$Date', Time_In='$Time_In', Time_Out='$Time_Out' where Track_ID='$id'";
 	$resultedit = mysqli_query($conn, $edit);
 	
+	$sqlcalculate  = "UPDATE tb_user_track SET Hours = TIMEDIFF(Time_Out, Time_In) WHERE Track_ID='$id'";
+	$resultcalc = mysqli_query($conn, $sqlcalculate);
+	
     if($resultedit)
     {
-        mysqli_close($conn); // Close connection
-        header("location:dashboard.php"); // redirects to all records page
+		if($resultcalc)
+		{
+        header("location:ADMINdashboard.php"); // redirects to all records page
         exit;
+		}
     }
     else
     {
@@ -94,6 +99,14 @@ h1
     </style>
 </head>
 <body>
+<div class="w3-container w3-2019-orange-tiger content" style='background-color:#f2552c' id="top">
+		<img src="../FBlogo.png" width="100" height="50" class="center" />
+		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
+</div>
+	<div class="w3-container content">
+	<h2 class="w3-center w3-padding w3-red w3-opacity-min">Update Time-Sheet Information</h2>
+	</div>
+<br>
 <div class="content2 w3-container w3-2019-orange-tiger content">
 <h3 class="w3-center w3-padding w3-black w3-opacity-min">Update Data</h3>
 
@@ -104,6 +117,7 @@ h1
   <input type="text" name="Time_In" value="<?php echo $data['Time_In'] ?>" placeholder="Enter Age" Required>
   <input type="text" name="Time_Out" value="<?php echo $data['Time_Out'] ?>" placeholder="Enter Age" Required>
 	<p></p>
-  <input type="submit" name="update" value="UPDATE" class="w3-button w3-white">
+  <input type="submit" name="update" value="UPDATE" class="ui green button submit">
+  <a href="ADMINDashboard.php" class="ui blue button submit">BACK</a>
 </form>
 </div>
