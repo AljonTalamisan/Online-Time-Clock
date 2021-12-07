@@ -1,7 +1,7 @@
 <?php
 // Initialize the session
 session_start();
- 
+
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: ADMINlogin.php");
@@ -19,7 +19,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         window.history.replaceState( null, null, window.location.href );
     }
 </script>
-<!--- Responsive ---->	
+<!--- Responsive ---->
 <meta name="viewport" content="width=device-width, initial-scale=1">
  <style>
 .content {
@@ -33,7 +33,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
   padding: 10px;
 }
 table.center {
-  margin-left: auto; 
+  margin-left: auto;
   margin-right: auto;
 }
 footer {
@@ -68,92 +68,95 @@ h1
 {
 	color:darkred;
 }
-</style>	
-<title>Fullybooked Online Time Clock</title> 	
+</style>
+<title>Fullybooked Online Time Clock</title>
 <body class="w3-theme-l2">
 <script src="hhttps://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
-	
-	
-<!----------------------------------------------------- Header Design -------------------------------------------------------------------------------->	
+
+
+<!----------------------------------------------------- Header Design -------------------------------------------------------------------------------->
 
 	<div class="w3-container w3-2019-orange-tiger content" style='background-color:#f2552c' id="top">
 		<img src="../FBlogo.png" width="100" height="50" class="center" />
 		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
+    <a href="ADMINlogout.php" class="ui primary button w3-right">Sign Out</a>
+    <h5 class="w3-left"> Welcome <i><?php echo htmlspecialchars($_SESSION['Username']) ?></i> </h5>
 	</div>
-	    
+
 	<p></p>
-	
+
 	<div class="w3-container content">
 	<h2 class="w3-center w3-padding w3-red w3-opacity-min">Clock In / Clock Out</h2>
 	</div>
-	
+
 	<div class="w3-container content">
 	<h2 class="w3-center" id="date" name="date"></h2>
 	<h2 class="w3-center" id="time" name="time"></h2>
    	</div>
-	
-<!----------------------------------------------------- Form for Registering Employees on a specific Company -------------------------------------------------------------------------------->	
+
+<!----------------------------------------------------- Form for Registering Employees on a specific Company -------------------------------------------------------------------------------->
 
 	<p></p>
-	
+
 <?php
 include 'db_con.php';
 
 $conn = OpenCon();
-	
-date_default_timezone_set("Asia/Manila");	
+
+date_default_timezone_set("Asia/Manila");
 $datenow = new DateTime(); // Date object using current date and time
 $dt=date('Y-m-d');
 $dm=date('H:i');
 
-$username=$_SESSION['Username'];		
-	
-$set = "SELECT Comp_Name from tb_comp_name"; // 
+$username=$_SESSION['Username'];
+
+$set = "SELECT Comp_Name from tb_comp_name"; //
 $resultset = mysqli_query($conn, $set);
 
-$latest = "SELECT Action,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Track_ID = (SELECT Max(Track_ID) from tb_user_track) and Username = '$username'";
+$latest = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Track_ID = (SELECT Max(Track_ID) from tb_user_track) and Username = '$username'";
 $latestset = mysqli_query($conn, $latest);
-	
+
 	while($rowlatest = mysqli_fetch_assoc($latestset)) {
 	?>
 	<div class="w3-container content w3-light-gray w3-opacity-min">
-	<h3 class="w3-center "><b class="w3-text-black">STATUS: </b><b class="w3-text-blue"><?php echo $rowlatest['Action']; ?></b></h3>
-	<h3 class="w3-center "><b class="w3-text-black">TIME-IN: </b><b class="w3-text-green"><?php echo $rowlatest['Time_In']; ?></b></h3>
-	<h3 class="w3-center "><b class="w3-text-black">TIME-OUT: </b><b class="w3-text-red"><?php echo $rowlatest['Time_Out']; ?></b></h3>
+	<h4 class="w3-center "><b class="w3-text-black">STATUS: </b><b class="w3-text-blue"><?php echo $rowlatest['Action']; ?></b></h4>
+  <h4 class="w3-center "><b class="w3-text-black">DATE: </b><b class="w3-text-blue"><?php echo $rowlatest['Date']; ?></b></h4>
+	<h4 class="w3-center "><b class="w3-text-black">TIME-IN: </b><b class="w3-text-green"><?php echo $rowlatest['Time_In']; ?></b></h4>
+	<h4 class="w3-center "><b class="w3-text-black">TIME-OUT: </b><b class="w3-text-red"><?php echo $rowlatest['Time_Out']; ?></b></h4>
 	</div>
 	<?php
-												  
+
 		}
-	
-	?>	
-	
+
+	?>
+
 ?>
 
 <div class="ui inverted container segment text"><br>
 <form name="Employee Form" class="w3-container" method="post">
-	
-<?php	
+
+<?php
 echo '<input name="date" type="hidden" value= "' . $dt . '">';
 echo '<input name="time" type="hidden" value= "' . $dm . '">';
 ?>
-	
+
 	<p><label><b>Company Name: </b><b class="w3-text-red">*</b></label></p>
-	
+
 	<input type=text name="company_list" class="w3-input w3-border w3-round-large" required placeholder="Company Name" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Comp_Name']) ?>"><br>
 	<p></p>
-	
+
 	<p><label><b>Employee Name: </b><b class="w3-text-red">*</b></label></p>
 		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required placeholder="Employee Name" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username']) ?>"><br>
-	
+
 	<input class="ui green button submit" name="submit2" type="submit" value="Clock In" id="submit2">
 	<input class="ui red button submit" name="submit3" type="submit" value="Clock Out" id="submit3">
 </form>
 </div>
 	<br><br><br><br>
 <p></p>
-	
-<!----------------------------------------------------- PHP CODE For Employee's Clock In -------------------------------------------------------------------------------->	
-	
+
+<!----------------------------------------------------- PHP CODE For Employee's Clock In -------------------------------------------------------------------------------->
+
 <?php
 
 
@@ -162,16 +165,16 @@ $companyname = mysqli_real_escape_string($conn, $_POST['company_list']);
 $employeename = mysqli_real_escape_string($conn, $_POST['employee_name']);
 $date = date('Y-m-d');
 $time = date('H:i');
-    
+
 //check if the employee had already clocked in today
-$sqlcheckemployee = "SELECT Comp_Name, Username, Date, Action FROM tb_user_track WHERE Date = '$date' AND Username = '$employeename' AND Action = 'IN'";	
+$sqlcheckemployee = "SELECT Comp_Name, Username, Date, Action FROM tb_user_track WHERE Date = '$date' AND Username = '$employeename' AND Action = 'IN'";
 $result = mysqli_query($conn, $sqlcheckemployee);
-	
-	
+
+
 //check if the name is already been registered on database
-$sqlcheckemployee2 = "SELECT Comp_Name, Username FROM tb_user WHERE Comp_Name = '$companyname' AND Username = '$employeename'";	
+$sqlcheckemployee2 = "SELECT Comp_Name, Username FROM tb_user WHERE Comp_Name = '$companyname' AND Username = '$employeename'";
 $result2 = mysqli_query($conn, $sqlcheckemployee2);
-	
+
 if (mysqli_num_rows($result) > 0) {
 
 ?>
@@ -180,15 +183,15 @@ swal({
 text: "This Employee had already Clocked In!",
 icon: "error",
 });
- 
+
 	</script>
-	
+
 <?php
-	
+
   }
-	
+
 else if (mysqli_num_rows($result2) == 0) {
-	
+
 	?>
 	<script> //popup message employee not yet registered
 swal({
@@ -196,33 +199,33 @@ text: "This Employee is not yet Registered!",
 icon: "error",
 });
 	</script>
-	
+
 	<?php
 }
-	
-else 
+
+else
 {
 $sql = "insert into tb_user_track(Comp_Name, Username, Date, Time_In, Action) values ('$companyname', '$employeename', '$date', '$time', 'IN')";
 
 
 if (mysqli_query($conn, $sql))
-{	
+{
 ?>
-	<script> 
+	<script>
 swal({
 title: "SUCCESS",
 text: "Employee Successfully Clocked In!",
 icon: "success"
-}).then(function(){ 
+}).then(function(){
    location.reload();
    }
 );
 	</script>
-	
+
 <?php
-} 
-	
-else 
+}
+
+else
 {
   echo "Error: " . $sql . "<br>" . mysqli_error($conn);
 }
@@ -230,9 +233,9 @@ else
 }
 
 ?>
-	
-<!----------------------------------------------------- PHP CODE For Employee's Clock Out-------------------------------------------------------------------------------->	
-	
+
+<!----------------------------------------------------- PHP CODE For Employee's Clock Out-------------------------------------------------------------------------------->
+
 
 <?php
 
@@ -244,8 +247,8 @@ $date2 = date('Y-m-d');
 $time2 = date('H:i');
 
 //check if the employee had already clocked in today
-$sqlout = "SELECT Comp_Name, Username, Date, Action, Time_Out FROM tb_user_track WHERE Date = '$date2' AND Username = '$employeename2' AND Action = 'IN'";	
-$result = mysqli_query($conn, $sqlout);	
+$sqlout = "SELECT Comp_Name, Username, Date, Action, Time_Out FROM tb_user_track WHERE Date = '$date2' AND Username = '$employeename2' AND Action = 'IN'";
+$result = mysqli_query($conn, $sqlout);
 
 if (mysqli_num_rows($result) > 0) {
 
@@ -256,71 +259,71 @@ if (mysqli_query($conn, $sql))
 {
 	if(mysqli_query($conn, $sqlcalculate)){
 ?>
-	<script> 
+	<script>
 swal({
 title: "SUCCESS",
 text: "Employee Successfully Clocked Out!",
 icon: "success"
-}).then(function(){ 
+}).then(function(){
    location.reload();
    }
 );
 	</script>
-	
+
 <?php
 	}
 }
 }
-	
+
 else {
-	
+
 ?>
 	<script> //popup message had already clocked in
 swal({
 text: "This Employee had already Clocked Out!",
 icon: "error",
 });
- 
+
 	</script>
-	
+
 <?php
-	
-  }	
-	
+
+  }
+
 }
 
 
 
 ?>
-	
-	
-	
-	<!----------------------------------------------------- PHP CODE For Employee's Name Registration -------------------------------------------------------------------------------->	
-	
-	
+
+
+
+	<!----------------------------------------------------- PHP CODE For Employee's Name Registration -------------------------------------------------------------------------------->
+
+
 <script type="text/javascript">
     window.onload = setInterval(clock,1000);
 
     function clock()
     {
 	  var d = new Date();
-	  
+
 	  var date = d.getDate();
-	  
+
 	  var month = d.getMonth();
 	  var montharr =["Jan","Feb","Mar","April","May","June","July","Aug","Sep","Oct","Nov","Dec"];
 	  month=montharr[month];
-	  
+
 	  var year = d.getFullYear();
-	  
+
 	  var day = d.getDay();
 	  var dayarr =["Sun","Mon","Tues","Wed","Thurs","Fri","Sat"];
 	  day=dayarr[day];
-	  
+
       var min = d.getMinutes();
 	  var sec = d.getSeconds();
-		
-   var hour   = d.getHours();	
+
+   var hour   = d.getHours();
    var minute = d.getMinutes();
    var second = d.getSeconds();
    var ap = "AM";
@@ -330,7 +333,7 @@ icon: "error",
    if (hour   < 10) { hour   = "0" + hour;   }
    if (minute < 10) { minute = "0" + minute; }
    if (second < 10) { second = "0" + second; }
-	
+
 	  document.getElementById("date").innerHTML=day+", "+date+" "+month+" "+year;
 	  document.getElementById("time").innerHTML=hour+":"+minute+":"+second+" "+ap;
     }
@@ -342,12 +345,11 @@ function myFunction() {
 }
 </script>
 
-<p></p>	
+<p></p>
 <footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
 	<a href="reset-password.php" class="btn btn-warning w3-button">Reset Password</a>
 	<a href="ADMINdashboard.php" class="btn btn-warning w3-button">Dashboard</a>
-	<a href="ADMINlogout.php" class="btn btn-warning w3-button">Sign Out</a>
 	<a href="RegularRegister.php" class="btn btn-warning w3-button">Register Regular User</a>
 	<a href="ADMINregister.php" class="btn btn-warning w3-button">Create Admin Account</a>
 </footer>

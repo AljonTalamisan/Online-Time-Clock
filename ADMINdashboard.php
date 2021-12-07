@@ -13,6 +13,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 <link rel="stylesheet" href="w3.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
 <script src="tableExport/tableExport.js"></script>
 <script type="text/javascript" src="tableExport/jquery.base64.js"></script>
 <script src="js/export.js"></script>
@@ -77,6 +78,8 @@ $resultname = mysqli_query($conn, $choosename);
   <img src="../FBlogo.png" width="100" height="60" class="center2" />
   <h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">FullyBooked Time Track Dashboard</h2>
   <h1 class="w3-center w3-padding w3-black w3-opacity-min">REPORT</h1>
+  <a href="ADMINlogout.php" class="ui primary button w3-right">Sign Out</a>
+  <h5 class="w3-left"> Welcome <i><?php echo htmlspecialchars($_SESSION['Username']) ?></i> </h5>
 </div>
 <!------------------ Design for Selecting a Specific Company ----------------------->
 <div class="w3-container content">
@@ -99,7 +102,7 @@ $resultname = mysqli_query($conn, $choosename);
 				?>
 			</datalist>
 <input class="w3-btn submit" name="submit2" type="submit" value="Next" style='background-color:#f2552c'>
-<p></p>
+<p></p><br>
 	</form>
 
 <!------------- PHP query for checking the date and displaying the result----------->
@@ -134,7 +137,7 @@ if (mysqli_num_rows($resultset) > 0) {
 			<th>TIME IN</th>
 			<th>TIME OUT</th>
 			<th>HOURS</th>
-			<td>Edit</td>
+			<th>EDIT</th>
 			</tr>
 
 <p></p>
@@ -143,13 +146,13 @@ if (mysqli_num_rows($resultset) > 0) {
 ?>
        <tr>
 		<td><small><?php echo $row['Track_ID']; ?></small></td>
-  		<td><small><?php echo $row['Username']; ?></small></td>
+  	<td><small><?php echo $row['Username']; ?></small></td>
 		<td><small><?php echo $row['Comp_Name']; ?></small></td>
 		<td><small><?php echo $row['Date']; ?></small></td>
 		<td><small><?php echo $row['Time_In']; ?></small></td>
 		<td><small><?php echo $row['Time_Out']; ?></small></td>
 		<td><small><?php echo $row['Hours']; ?></small></td>
-		<td class="w3-text-red"><small><a href="edit.php?id=<?php echo $row['Track_ID']; ?>">Edit</a></small></td>
+		<td class="w3-text-red"><small><a href="edit.php?id=<?php echo $row['Track_ID']; ?>">Update</a></small></td>
   		</tr>
 
     <?php
@@ -189,12 +192,12 @@ if (mysqli_num_rows($resultset) > 0) {
 <p class="w3-center w3-medium w3-black w3-padding">SELECT DATE RANGE (All Records within that Date Range)</p>
 <form name="indexForm" class="w3-container" method="post">
            <label>Date:</label>
-            <input type="date" class="form-control" placeholder="Start"  name="date1"/>
+            <input type="date" class="form-control" placeholder="Start" required name="date1"/>
             <label>To</label>
-            <input type="date" class="form-control" placeholder="End"  name="date2"/>
+            <input type="date" class="form-control" placeholder="End" required name="date2"/>
 <!-----<input type="date" name="today">------>
 <input class="w3-btn submit" name="submit" type="submit" value="Next" style='background-color:#f2552c'>
-<p></p>
+<p></p><br>
 </form>
 <?php
 
@@ -223,6 +226,7 @@ $resultdate = mysqli_query($conn, $sqldate);
 			<th>TIME IN</th>
 			<th>TIME OUT</th>
 			<th>HOURS</th>
+      <th>Edit</th>
 			</tr>
 
 <p></p>
@@ -239,6 +243,7 @@ $resultdate = mysqli_query($conn, $sqldate);
 		<td><small><?php echo $row['Time_In']; ?></small></td>
 		<td><small><?php echo $row['Time_Out']; ?></small></td>
 		<td><small><?php echo $row['Hours']; ?></small></td>
+    <td class="w3-text-red"><small><a href="edit.php?id=<?php echo $row['Track_ID']; ?>">Update</a></small></td>
   		</tr>
 
     <?php
@@ -277,7 +282,7 @@ $resultdate = mysqli_query($conn, $sqldate);
 
 <p class="w3-center w3-medium w3-black w3-padding">SELECT EMPLOYEE AND DATE (Specific Date Range for a specific employee)</p>
 <form name="indexForm2" class="w3-container" method="post">
-<input type="search" list="mylist4" class="w3-input w3-border w3-round-large" name="emp" placeholder="Select Employee" onkeyup='saveValue(this);' id="comp_name">
+<input required type="search" list="mylist4" class="w3-input w3-border w3-round-large" name="emp" placeholder="Select Employee" onkeyup='saveValue(this);' id="comp_name">
 			<datalist id='mylist4'>
 				<?php
 		while($row = mysqli_fetch_array($resultname)) {
@@ -287,12 +292,12 @@ $resultdate = mysqli_query($conn, $sqldate);
 			</datalist>
 	<br>
 	        <label>Date:</label>
-            <input type="date" class="form-control" placeholder="Start"  name="date3"/>
+            <input type="date" class="form-control" placeholder="Start" required name="date3"/>
             <label>To</label>
-            <input type="date" class="form-control" placeholder="End"  name="date4"/>
+            <input type="date" class="form-control" placeholder="End" required name="date4"/>
 
 <input class="w3-btn submit" name="submit3" type="submit" value="Next" style='background-color:#f2552c'>
-<p></p>
+<p></p><br><br>
 </form>
 
 <?php
@@ -328,7 +333,7 @@ if (mysqli_num_rows($resultset2) > 0) {
 			<th>TIME IN</th>
 			<th>TIME OUT</th>
 			<th>HOURS</th>
-			<td>Edit</td>
+			<th>Edit</th>
 			</tr>
 
 <p></p>
@@ -344,7 +349,7 @@ if (mysqli_num_rows($resultset2) > 0) {
 		<td><small><?php echo $row['Time_In']; ?></small></td>
 		<td><small><?php echo $row['Time_Out']; ?></small></td>
 		<td><small><?php echo $row['Hours']; ?></small></td>
-		<td class="w3-text-red"><small><a href="edit.php?id=<?php echo $row['Track_ID']; ?>">Edit</a></small></td>
+		<td class="w3-text-red"><small><a href="edit.php?id=<?php echo $row['Track_ID']; ?>">Update</a></small></td>
   		</tr>
 
     <?php
@@ -357,10 +362,10 @@ if (mysqli_num_rows($resultset2) > 0) {
 
 	<?php
 
-	echo "</div>";
+
 
 	?>
-
+  <br>
 	<div class="w3-dropdown-hover">
 	  <button class="w3-button" style='background-color:#f2552c'>EXPORT</button>
 	  <div class="w3-dropdown-content w3-bar-block w3-border">
@@ -368,10 +373,12 @@ if (mysqli_num_rows($resultset2) > 0) {
 	    <a class="w3-bar-item w3-button dataExport" data-type="excel">XLS</a>
 	    <a class="w3-bar-item w3-button dataExport" data-type="txt">TXT</a>
 	  </div>
+      <br>  <br>   <br>   <br>   <br>
 	</div>
 
-	<?php
 
+	<?php
+	echo "</div>";
 }
 
 }
@@ -441,7 +448,6 @@ function myFunctionSet3() {
 <a href="#top"><img src="../FBlogo.png" width="150" height="25"/>
 	<p></p></a>
         <a href="reset-password.php" class="btn btn-warning w3-button">Reset Password</a>
-        <a href="ADMINlogout.php" class="btn btn-danger ml-3 w3-button">Sign Out</a>
 		<a href="ADMINattendance.php" class="btn btn-warning w3-button">Clock In</a>
 		<a href="RegularRegister.php" class="btn btn-warning w3-button">Register Regular User</a>
 		<a href="ADMINregister.php" class="btn btn-warning w3-button">Create Admin Account</a>

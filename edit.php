@@ -5,7 +5,7 @@ $conn = OpenCon();
 
 $id = $_GET['id']; // get id through query string
 
-$qry = mysqli_query($conn,"select Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') from tb_user_track where Track_ID='$id'"); // select query
+$qry = mysqli_query($conn,"select Username, Comp_Name, Date, Time_In, Time_Out, DATE_FORMAT(Hours,'%H:%i') from tb_user_track where Track_ID='$id'"); // select query
 
 $data = mysqli_fetch_array($qry); // fetch data
 
@@ -16,13 +16,13 @@ if(isset($_POST['update'])) // when click on Update button
 	$Date = $_POST['Date'];
 	$Time_In = $_POST['Time_In'];
 	$Time_Out = $_POST['Time_Out'];
-	
-    $edit = "update tb_user_track set Username='$Username', Comp_Name='$Comp_Name', Date='$Date', Time_In='$Time_In', Time_Out='$Time_Out' where Track_ID='$id'";
+
+    $edit = "update tb_user_track set Username='$Username', Comp_Name='$Comp_Name', Date='$Date', Time_Out='$Time_In', Time_Out='$Time_Out' where Track_ID='$id'";
 	$resultedit = mysqli_query($conn, $edit);
-	
+
 	$sqlcalculate  = "UPDATE tb_user_track SET Hours = TIMEDIFF(Time_Out, Time_In) WHERE Track_ID='$id'";
 	$resultcalc = mysqli_query($conn, $sqlcalculate);
-	
+
     if($resultedit)
     {
 		if($resultcalc)
@@ -34,7 +34,7 @@ if(isset($_POST['update'])) // when click on Update button
     else
     {
         echo "error";
-    }    	
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -51,7 +51,7 @@ if(isset($_POST['update'])) // when click on Update button
     <style>
         body{ font: 14px sans-serif; }
         .wrapper{ width: 360px; padding: 20px; }
-		
+
 		.content {
   max-width: 800px;
   margin: auto;
@@ -63,7 +63,7 @@ if(isset($_POST['update'])) // when click on Update button
   padding: 10px;
 }
 table.center {
-  margin-left: auto; 
+  margin-left: auto;
   margin-right: auto;
 }
 footer {
@@ -95,7 +95,7 @@ h1
 {
 	color:darkred;
 }
-		
+
     </style>
 </head>
 <body>
@@ -108,14 +108,14 @@ h1
 	</div>
 <br>
 <div class="content2 w3-container w3-2019-orange-tiger content">
-<h3 class="w3-center w3-padding w3-black w3-opacity-min">Update Data</h3>
+<h3 class="w3-center w3-padding w3-black w3-opacity-min">Update Data (Please Use Military Time)</h3>
 
 <form method="POST">
-  <input type="text" name="Username" value="<?php echo $data['Username'] ?>" placeholder="Enter Full Name" Required>
-  <input type="text" name="Comp_Name" value="<?php echo $data['Comp_Name'] ?>" placeholder="Enter Age" Required>
-  <input type="text" name="Date" value="<?php echo $data['Date'] ?>" placeholder="Enter Age" Required>
-  <input type="text" name="Time_In" value="<?php echo $data['Time_In'] ?>" placeholder="Enter Age" Required>
-  <input type="text" name="Time_Out" value="<?php echo $data['Time_Out'] ?>" placeholder="Enter Age" Required>
+  <input type="text" name="Username" value="<?php echo $data['Username'] ?>" placeholder="Enter Username" Required>
+  <input type="text" name="Comp_Name" value="<?php echo $data['Comp_Name'] ?>" placeholder="Enter Deparmtment Name" Required>
+  <input type="text" name="Date" value="<?php echo $data['Date'] ?>" placeholder="Enter Date" Required>
+  <input type="text" name="Time_In" value="<?php echo $data['Time_In'] ?>" placeholder="Enter Time In" Required>
+  <input type="text" name="Time_Out" value="<?php echo $data['Time_Out'] ?>" placeholder="Enter Time Out" Required>
 	<p></p>
   <input type="submit" name="update" value="UPDATE" class="ui green button submit">
   <a href="ADMINDashboard.php" class="ui blue button submit">BACK</a>

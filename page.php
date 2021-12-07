@@ -42,7 +42,7 @@ while($row = mysqli_fetch_array($result)) {
 
 // display the links to the pages
 for ($page=1;$page<=$number_of_pages;$page++) {
-  echo '<a href="page.php?page=' . $page . '">' . $page . '</a> ';
+  echo '<a href="ADMINDashboard.php?page=' . $page . '">' . $page . '</a> ';
 }
 
 ?>

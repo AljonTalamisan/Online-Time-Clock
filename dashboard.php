@@ -17,7 +17,7 @@ if(!isset($_SESSION["Username"]))
 <script type="text/javascript" src="tableExport/jquery.base64.js"></script>
 <script src="js/export.js"></script>
 <script src="js/export2.js"></script>
-<!--- Responsive ---->	
+<!--- Responsive ---->
 <meta name="viewport" content="width=device-width, initial-scale=1">
  <style>
 .content {
@@ -33,7 +33,7 @@ if(!isset($_SESSION["Username"]))
   padding: 10px;
 }
 table.center {
-  margin-left: auto; 
+  margin-left: auto;
   margin-right: auto;
 }
 footer {
@@ -54,33 +54,35 @@ body {
     margin-bottom:100px;
 }
 
-</style>	
-<title>FullyBooked Dashboard</title> 	
+</style>
+<title>FullyBooked Dashboard</title>
 <body class="w3-theme-l2" id="top">
 
 <?php
-	
+
 include 'db_con.php';
-	
+
 $conn = OpenCon();
-	
-$chooseset = "SELECT Comp_Name from tb_comp_name"; // 
+
+$chooseset = "SELECT Comp_Name from tb_comp_name"; //
 $resultsetchoose = mysqli_query($conn, $chooseset);
-	
-$choosename = "SELECT Username from tb_user where Username='".$_SESSION['Username']."'"; // 
+
+$choosename = "SELECT Username from tb_user where Username='".$_SESSION['Username']."'"; //
 $resultname = mysqli_query($conn, $choosename);
-	
+
 ?>
-<!------------------ Background Design for the title ------------------>	
+<!------------------ Background Design for the title ------------------>
 <div class="w3-container w3-2019-orange-tiger content2" style='background-color:#f2552c'>
 	<img src="../FBlogo.png" width="100" height="60" class="center2" />
 <h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">FullyBooked Time Track Dashboard</h2>
 <h1 class="w3-center w3-padding w3-black w3-opacity-min">REPORT</h1>
+<a href="ADMINlogout.php" class="ui primary button w3-right">Sign Out</a>
+<h5 class="w3-left"> Welcome <i><?php echo htmlspecialchars($_SESSION['Username']) ?></i> </h5>
 </div>
-<!------------------ Design for Selecting a Specific Company ----------------------->	
+<!------------------ Design for Selecting a Specific Company ----------------------->
 <div class="w3-container content">
 
-<!------------- PHP query for checking the date and displaying the result----------->	
+<!------------- PHP query for checking the date and displaying the result----------->
 <p class="w3-center w3-medium w3-black w3-padding">SELECT A DATE</p>
 <form name="indexForm" class="w3-container" method="post">
            <label>Date:</label>
@@ -90,17 +92,17 @@ $resultname = mysqli_query($conn, $choosename);
 <!-----<input type="date" name="today">------>
 <input class="w3-btn submit" name="submit" type="submit" value="Next" style='background-color:#f2552c'>
 <p></p>
-</form>	
+</form>
 <?php
-	
+
 if(isset($_POST['submit'])) {
-	
+
 $date1 = date("Y-m-d", strtotime($_POST['date1']));
-$date2 = date("Y-m-d", strtotime($_POST['date2']));	
-	
+$date2 = date("Y-m-d", strtotime($_POST['date2']));
+
 $sqldate = "SELECT Track_ID, Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours from tb_user_track where Date BETWEEN '$date1' AND '$date2' and Username='".$_SESSION['Username']."'";
 $resultdate = mysqli_query($conn, $sqldate);
-	
+
 	if (mysqli_num_rows($resultdate) >= 0) {
     // output data of each row
 	echo "<div class='w3-container content w3-center'>";
@@ -119,12 +121,12 @@ $resultdate = mysqli_query($conn, $sqldate);
 			<th>TIME OUT</th>
 			<th>HOURS</th>
 			</tr>
- 
+
 <p></p>
 <?php
-	
+
     while($row = mysqli_fetch_assoc($resultdate)) {
-		 
+
 ?>
        <tr>
 		<td><small><?php echo $row['Track_ID']; ?></small></td>
@@ -135,20 +137,20 @@ $resultdate = mysqli_query($conn, $sqldate);
 		<td><small><?php echo $row['Time_Out']; ?></small></td>
 		<td><small><?php echo $row['Hours']; ?></small></td>
   		</tr>
-		
+
     <?php
-												  
+
 		}
-	
+
 	?>
-	
+
 	</table>
-	
+
 	<?php
-	
+
 	echo "</div>";
-	
-	?>	
+
+	?>
 	<div class="w3-dropdown-hover">
   		<button class="w3-button" style='background-color:#f2552c'>EXPORT</button>
   		<div class="w3-dropdown-content w3-bar-block w3-border">
@@ -157,17 +159,17 @@ $resultdate = mysqli_query($conn, $sqldate);
 			<a  class="w3-bar-item w3-button dataExport" data-type="txt">TXT</a>
   		</div>
 	</div>
-	
+
 	<?php
-		
+
 	echo "<br>"."<p class='w3-center'>";
 	echo "</p>";
 
-	
+
 }
 }
-	
-?>	
+
+?>
 
 <!------------- PHP query for checking an employee----------->
 
@@ -177,7 +179,7 @@ $resultdate = mysqli_query($conn, $sqldate);
 
 <input class="w3-btn submit" name="submit4" type="submit" value="Next" style='background-color:#f2552c'>
 <p></p>
-</form>		
+</form>
 
 <?php
 
@@ -185,11 +187,11 @@ if(isset($_POST['submit4'])) {
 
 
 $empname2 = $_POST['emp'];
-	
-$comp2 = "SELECT Track_ID, Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In, DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours from tb_user_track where Username = '$empname2'"; 
+
+$comp2 = "SELECT Track_ID, Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In, DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours from tb_user_track where Username = '$empname2'";
 $resultset2 = mysqli_query($conn, $comp2);
 
-	
+
 if (mysqli_num_rows($resultset2) > 0) {
 
 // Show the NAME of all employees who did not submit
@@ -198,7 +200,7 @@ if (mysqli_num_rows($resultset2) > 0) {
 	echo "<button onclick='myFunctionSet3()' class='w3-button w3-border w3-hover-deep-orange'>HIDE / SHOW</button>";
 	echo "</div>";
 	echo "<div class='w3-container content' id='myDIVset3'>";
-	
+
 ?>
 <table border='1' class='center w3-table w3-striped' id='dataTable'>
 			<tr>
@@ -210,11 +212,11 @@ if (mysqli_num_rows($resultset2) > 0) {
 			<th>TIME OUT</th>
 			<th>HOURS</th>
 			</tr>
- 
+
 <p></p>
 <?php
     while($row = mysqli_fetch_assoc($resultset2)) {
-		
+
 ?>
        <tr>
 		<td><small><?php echo $row['Track_ID']; ?></small></td>
@@ -225,19 +227,19 @@ if (mysqli_num_rows($resultset2) > 0) {
 		<td><small><?php echo $row['Time_Out']; ?></small></td>
 		<td><small><?php echo $row['Hours']; ?></small></td>
   		</tr>
-		
+
     <?php
-												  
+
 		}
-	
+
 	?>
-	
+
 	</table>
-	
+
 	<?php
-	
+
 	echo "</div>";
-	
+
 	?>
 	<div class="w3-dropdown-hover">
   		<button class="w3-button" style='background-color:#f2552c'>EXPORT</button>
@@ -249,14 +251,14 @@ if (mysqli_num_rows($resultset2) > 0) {
 	</div>
 	</div>
 	<?php
-	
-}
-	
+
 }
 
-	
-?> 	
-	
+}
+
+
+?>
+
 <script>
 function myFunction() {
   var x = document.getElementById("myDIV");
@@ -266,7 +268,7 @@ function myFunction() {
     x.style.display = "none";
   }
 }
-	
+
 function myFunction2() {
   var x = document.getElementById("myDIV2");
   if (x.style.display === "none") {
@@ -275,7 +277,7 @@ function myFunction2() {
     x.style.display = "none";
   }
 }
-	
+
 function myFunction3() {
   var x = document.getElementById("myDIV3");
   if (x.style.display === "none") {
@@ -284,7 +286,7 @@ function myFunction3() {
     x.style.display = "none";
   }
 }
-	
+
 function myFunctionSet1() {
   var x = document.getElementById("myDIVset1");
   if (x.style.display === "none") {
@@ -308,8 +310,8 @@ function myFunctionSet3() {
   } else {
     x.style.display = "none";
   }
-}	
-	
+}
+
 </script>
 
 </body>
