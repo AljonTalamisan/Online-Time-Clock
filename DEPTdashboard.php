@@ -85,24 +85,15 @@ $resultname = mysqli_query($conn, $choosename);
 </div>
 <!------------------ Design for Selecting a Specific Company ----------------------->
 <div class="w3-container content">
-<p class="w3-center w3-medium w3-black w3-padding">SELECT DEPARTMENT (All Records of Employees within the selected Department name)</p>
+<p class="w3-center w3-medium w3-black w3-padding">SELECT THE DATE RANGE</p>
 <form name="indexForm2" class="w3-container" method="post">
   <label>Date:</label>
    <input type="date" class="form-control" placeholder="Start"  name="dateA"/ required>
    <label>To</label>
    <input type="date" class="form-control" placeholder="End"  name="dateB"/ required>
    <p></p>
-<input type="search" list="mylist3" class="w3-input w3-border w3-round-large" name="comp" placeholder="Department" onkeyup='saveValue(this);' id="comp_name" required>
-			<datalist id='mylist3'>
-				<?php
-       				while ($row = $resultsetchoose->fetch_assoc())
-       					{
-
-         					echo '<option value="'.$row['deptName'].'"></option>';
-
-						}
-				?>
-			</datalist>
+   <input type=text name="comp" class="w3-input w3-border w3-round-large" readonly required placeholder="Company Name" id="comp_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Department']) ?>"><br>
+ 	<p></p>
 <input class="w3-btn submit" name="submit2" type="submit" value="Next" style='background-color:#f2552c'>
 <p></p><br>
 	</form>
@@ -117,7 +108,11 @@ if(isset($_POST['submit2'])) {
 
 $compname = $_POST['comp'];
 
-$comp = "SELECT Track_ID, Username, Department, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In, DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, Hours from tb_user_track where Department = '$compname' AND Date BETWEEN '$dateA' AND '$dateB'";
+// $comp = "SELECT Track_ID, Username, Department, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In, DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, Hours from tb_user_track where Department = '$compname' AND Date BETWEEN '$dateA' AND '$dateB'";
+$comp = "SELECT tb_user_track.Track_ID, tb_user.FirstName, tb_user.LastName, tb_user_track.Username, tb_user_track.Department, tb_user_track.Date, DATE_FORMAT(tb_user_track.Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(tb_user_track.Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(tb_user_track.Hours,'%H:%i') as Hours from tb_user_track
+INNER JOIN tb_user ON tb_user_track.Username=tb_user.Username
+where tb_user_track.Date BETWEEN '$dateA' AND '$dateB' and tb_user_track.Department = '$compname'";
+
 $resultset = mysqli_query($conn, $comp);
 $number_of_results = mysqli_num_rows($resultset);
 
@@ -125,16 +120,17 @@ if (mysqli_num_rows($resultset) > 0) {
 
 // Show the NAME of all employees who did not submit
 	echo "<div class='w3-container content w3-center'>";
-	echo "<div class='w3-center w3-medium'> <b>COMPANY SELECTED :</b> " . $compname . "</div>" . "<p></p>";
+  echo "<div class='w3-center w3-medium'> <b>DATE SELECTED :</b> " . $dateA .' to: '. $dateB . "</div>" . "<p></p>";
+	echo "<div class='w3-center w3-medium'> <b>DEPARTMENT NAME :</b> " . $compname . "</div>" . "<p></p>";
 	echo "<button onclick='myFunctionSet1()' class='w3-button w3-border w3-hover-deep-orange'>HIDE / SHOW</button>";
 	echo "</div>";
 	echo "<div class='w3-container content' id='myDIVset1'>";
 ?>
 <table border='1' class='center w3-table w3-striped' id='dataTable'>
-<thead>
-    	<tr>
+  <thead>
+			<tr>
 			<th>ID</th>
-			<th>USERNAME</th>
+			<th>NAME</th>
 			<th>DEPARTMENT</th>
 			<th>DATE</th>
 			<th>TIME IN</th>
@@ -143,20 +139,20 @@ if (mysqli_num_rows($resultset) > 0) {
 			<th>EDIT</th>
 			</tr>
 </thead>
-
+<p></p>
 <?php
     while($row = mysqli_fetch_assoc($resultset)) {
 ?>
 <tbody>
        <tr>
 		<td><small><?php echo $row['Track_ID']; ?></small></td>
-  	<td><small><?php echo $row['Username']; ?></small></td>
+  	<td><small><?php echo $row['FirstName'] . ' ' . $row['LastName'] ; ?></small></td>
 		<td><small><?php echo $row['Department']; ?></small></td>
 		<td><small><?php echo $row['Date']; ?></small></td>
 		<td><small><?php echo $row['Time_In']; ?></small></td>
 		<td><small><?php echo $row['Time_Out']; ?></small></td>
 		<td><small><?php echo $row['Hours']; ?></small></td>
-		<td class="w3-text-red"><small><a href="edit.php?id=<?php echo $row['Track_ID']; ?>">Update</a></small></td>
+		<td class="w3-text-red"><small><a href="editDEPT.php?id=<?php echo $row['Track_ID']; ?>">Update</a></small></td>
   		</tr>
 </tbody>
     <?php
@@ -179,7 +175,7 @@ if (mysqli_num_rows($resultset) > 0) {
   		<div class="w3-dropdown-content w3-bar-block w3-border">
       		<a  class="w3-bar-item w3-button dataExport" data-type="csv">CSV</a>
       		<a  class="w3-bar-item w3-button dataExport" data-type="excel">XLS</a>
-			    <a  class="w3-bar-item w3-button dataExport" data-type="txt">TXT</a>
+			<a  class="w3-bar-item w3-button dataExport" data-type="txt">TXT</a>
   		</div>
 	</div>
 
@@ -201,109 +197,7 @@ icon: "error",
 }
 
 ?>
-<!------------- PHP query for checking the date and displaying the result----------->
-<p class="w3-center w3-medium w3-black w3-padding">SELECT DATE RANGE (All Records within that Date Range)</p>
-<form name="indexForm" class="w3-container" method="post">
-           <label>Date:</label>
-            <input type="date" class="form-control" placeholder="Start" required name="date1"/>
-            <label>To</label>
-            <input type="date" class="form-control" placeholder="End" required name="date2"/>
-<!-----<input type="date" name="today">------>
-<input class="w3-btn submit" name="submit" type="submit" value="Next" style='background-color:#f2552c'>
-<p></p><br>
-</form>
-<?php
 
-if(isset($_POST['submit'])) {
-
-$date1 = date("Y-m-d", strtotime($_POST['date1']));
-$date2 = date("Y-m-d", strtotime($_POST['date2']));
-
-$sqldate = "SELECT Track_ID, Username, Department, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours from tb_user_track where Date BETWEEN '$date1' AND '$date2'";
-$resultdate = mysqli_query($conn, $sqldate);
-
-	if (mysqli_num_rows($resultdate) > 0) {
-    // output data of each row
-	echo "<div class='w3-container content w3-center'>";
-	echo "<div class='w3-center w3-medium'> <b>DATE SELECTED :</b> " . $date1 .' to: '. $date2 . "</div>" . "<p></p>";
-	echo "<button onclick='myFunctionSet2()' class='w3-button w3-border w3-hover-deep-orange'>HIDE / SHOW</button>";
-	echo "</div>";
-	echo "<div class='w3-container content' id='myDIVset2'>";
-?>
-<table border='1' class='center w3-table w3-striped' id='dataTable'>
-  <thead>
-			<tr>
-			<th>ID</th>
-			<th>USERNAME</th>
-			<th>DEPARTMENT</th>
-			<th>DATE</th>
-			<th>TIME IN</th>
-			<th>TIME OUT</th>
-			<th>HOURS</th>
-      <th>Edit</th>
-			</tr>
-</thead>
-<p></p>
-<?php
-
-    while($row = mysqli_fetch_assoc($resultdate)) {
-
-?>
-<tbody>
-       <tr>
-		<td><small><?php echo $row['Track_ID']; ?></small></td>
-  	<td><small><?php echo $row['Username']; ?></small></td>
-		<td><small><?php echo $row['Department']; ?></small></td>
-		<td><small><?php echo $row['Date']; ?></small></td>
-		<td><small><?php echo $row['Time_In']; ?></small></td>
-		<td><small><?php echo $row['Time_Out']; ?></small></td>
-		<td><small><?php echo $row['Hours']; ?></small></td>
-    <td class="w3-text-red"><small><a href="edit.php?id=<?php echo $row['Track_ID']; ?>">Update</a></small></td>
-  		</tr>
-</tbody>
-    <?php
-
-		}
-
-	?>
-
-	</table>
-
-	<?php
-
-	echo "</div>";
-
-	?>
-	<div class="w3-dropdown-hover">
-  		<button class="w3-button" style='background-color:#f2552c'>EXPORT</button>
-  		<div class="w3-dropdown-content w3-bar-block w3-border">
-      		<a  class="w3-bar-item w3-button dataExport" data-type="csv">CSV</a>
-      		<a  class="w3-bar-item w3-button dataExport" data-type="excel">XLS</a>
-			    <a  class="w3-bar-item w3-button dataExport" data-type="txt">TXT</a>
-  		</div>
-	</div>
-
-	<?php
-
-	echo "<br>"."<p class='w3-center'>";
-	echo "</p>";
-
-}
-else if (mysqli_num_rows($resultdate) == 0) {
-
-  ?>
-  <script> //popup message when selecting date range with no data/records
-swal.fire({
-text: "No Data found within this Date Range",
-icon: "error",
-});
-  </script>
-
-  <?php
-}
-}
-
-?>
 <!------------- PHP query for checking the specific employee and Date----------->
 
 <p class="w3-center w3-medium w3-black w3-padding">SELECT EMPLOYEE AND DATE (Specific Date Range for a specific employee)</p>
@@ -377,7 +271,7 @@ if (mysqli_num_rows($resultset2) > 0) {
 		<td><small><?php echo $row['Time_In']; ?></small></td>
 		<td><small><?php echo $row['Time_Out']; ?></small></td>
 		<td><small><?php echo $row['Hours']; ?></small></td>
-		<td class="w3-text-red"><small><a href="edit.php?id=<?php echo $row['Track_ID']; ?>">Update</a></small></td>
+		<td class="w3-text-red"><small><a href="editDEPT.php?id=<?php echo $row['Track_ID']; ?>">Update</a></small></td>
   		</tr>
 </tbody>
     <?php
@@ -487,12 +381,9 @@ function myFunctionSet3() {
   <h6></h6>
 <a href="#top"><img src="../FBlogo.png" width="150" height="25"/>
 	<p></p></a>
-        <a href="reset-password.php" class="btn btn-warning w3-button">Change Password</a>
-		<a href="ADMINattendance.php" class="btn btn-warning w3-button">Clock In</a>
-		<a href="RegularRegister2.php" class="btn btn-warning w3-button">Register Regular User</a>
-		<a href="ADMINregister2.php" class="btn btn-warning w3-button">Create Admin Account</a>
-    <a href="DEPTregister.php" class="btn btn-warning w3-button">Create Dept Head Account</a>
-    <a href="Masterlist.php" class="btn btn-warning w3-button">Masterlist</a>
+        <a href="reset-password3.php" class="btn btn-warning w3-button">Reset Password</a>
+      	<a href="DEPTattendance.php" class="btn btn-warning w3-button">Clock In</a>
+      	<a href="RegularRegister3.php" class="btn btn-warning w3-button">Register Regular User</a>
 </footer>
 
 </html>

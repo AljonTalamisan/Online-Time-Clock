@@ -4,7 +4,7 @@ session_start();
 
 // Check if the user is logged in, otherwise redirect to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: ADMINdashboard.php");
+    header("location: DEPTdashboard.php");
     exit;
 }
 
@@ -55,7 +55,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                 // Password updated successfully. Destroy the session, and redirect to login page
 
                 session_destroy();
-                header("location: ADMINdashboard.php");
+                header("location: DEPTdashboard.php");
                 exit();
             } else{
                 echo "Oops! Something went wrong. Please try again later.";
@@ -141,8 +141,8 @@ h1
 	<p></p>
 
     <div class="wrapper w3-container content">
-        <h2>Change Password</h2>
-        <p>Please fill out this form to change your password.</p>
+        <h2>Reset Password</h2>
+        <p>Please fill out this form to reset your password.</p>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
                 <label>New Password</label>
@@ -156,7 +156,7 @@ h1
             </div>
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">
-                <a class="btn btn-link ml-2 w3-text-grey" href="ADMINdashboard.php">Cancel</a>
+                <a class="btn btn-link ml-2 w3-text-grey" href="DEPTdashboard.php">Cancel</a>
             </div>
         </form>
     </div>

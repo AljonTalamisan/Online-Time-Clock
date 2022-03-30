@@ -70,28 +70,26 @@ input, label {
 
   $id = $_GET['id']; // get id through query string
 
-  $qry = mysqli_query($conn,"select Username, Department, Date, Time_In, Time_Out, DATE_FORMAT(Hours,'%H:%i') from tb_user_track where Track_ID='$id'"); // select query
+  $qry = mysqli_query($conn,"select EmployeeNo, FirstName, MiddleName, LastName, Department, Username from tb_user where User_ID='$id'"); // select query
 
   $data = mysqli_fetch_array($qry); // fetch data
 
   if(isset($_POST['update'])) // when click on Update button
   {
+    $EmployeeNo = $_POST['EmployeeNo'];
+    $FirstName = $_POST['FirstName'];
+  	$MiddleName = $_POST['MiddleName'];
+  	$LastName = $_POST['LastName'];
+  	$Department = $_POST['Department'];
     $Username = $_POST['Username'];
-    $Comp_Name = $_POST['Department'];
-  	$Date = $_POST['Date'];
-  	$Time_In = $_POST['Time_In'];
-  	$Time_Out = $_POST['Time_Out'];
 
-      $edit = "update tb_user_track set Username='$Username', Department='$Comp_Name', Date='$Date', Time_In='$Time_In', Time_Out='$Time_Out' where Track_ID='$id'";
+    $edit = "update tb_user set EmployeeNo='$EmployeeNo', FirstName='$FirstName', MiddleName='$MiddleName', LastName='$LastName', Department='$Department', Username='$Username' where User_ID='$id'";
   	$resultedit = mysqli_query($conn, $edit);
 
-  	$sqlcalculate  = "UPDATE tb_user_track SET Hours = TIMEDIFF(Time_Out, Time_In) WHERE Track_ID='$id'";
-  	$resultcalc = mysqli_query($conn, $sqlcalculate);
 
       if($resultedit)
       {
-  		if($resultcalc)
-  		{
+
         ?>
         <script>
 
@@ -99,7 +97,7 @@ input, label {
             text: "Successfully Updated Track!",
             icon: "success",
               }).then(function() {
-                window.location = "ADMINdashboard.php";
+                window.location = "Masterlist.php";
                 });
 
         </script>
@@ -107,7 +105,7 @@ input, label {
           // header("location:ADMINdashboard.php"); // redirects to all records page
           // exit;
   		}
-      }
+
       else
       {
           echo "error";
@@ -124,28 +122,32 @@ input, label {
 	</div>
 <br>
 <div class="content2 w3-container w3-2019-orange-tiger content">
-<h3 class="w3-center w3-padding w3-black w3-opacity-min">Update Data (Please Use Military Time)</h3>
+<h3 class="w3-center w3-padding w3-black w3-opacity-min">Update Data</h3>
 
 <form method="POST">
   <div style="float:left;">
-      <label for="Username">Username</label>
-      <input id="Username" type="text" value="<?php echo $data['Username'] ?>" name="Username" readonly>
+      <label for="EmployeeNo">EmployeeNo</label>
+      <input id="EmployeeNo" type="text" value="<?php echo $data['EmployeeNo'] ?>" name="EmployeeNo" readonly>
+  </div>
+  <div style="float:left;">
+      <label for="FirstName">FirstName</label>
+      <input id="FirstName" type="text" value="<?php echo $data['FirstName'] ?>" name="FirstName" >
+  </div>
+  <div style="float:left;">
+      <label for="MiddleName">MiddleName</label>
+      <input id="MiddleName" type="text" value="<?php echo $data['MiddleName'] ?>" name="MiddleName" >
+  </div>
+  <div style="float:left;">
+      <label for="LastName">LastName</label>
+      <input id="LastName" type="text" value="<?php echo $data['LastName'] ?>" name="LastName" Required>
   </div>
   <div style="float:left;">
       <label for="Department">Department</label>
-      <input id="Department" type="text" value="<?php echo $data['Department'] ?>" name="Department" readonly>
+      <input id="Department" type="text" value="<?php echo $data['Department'] ?>" name="Department"  Required>
   </div>
   <div style="float:left;">
-      <label for="Date">Date</label>
-      <input id="Date" type="date" value="<?php echo $data['Date'] ?>" name="Date" >
-  </div>
-  <div style="float:left;">
-      <label for="Time_In">Time-In</label>
-      <input id="Time_In" type="text" value="<?php echo $data['Time_In'] ?>" name="Time_In" placeholder="00:00:00" Required>
-  </div>
-  <div style="float:left;">
-      <label for="Time_Out">Time-Out</label>
-      <input id="Time_Out" type="text" value="<?php echo $data['Time_Out'] ?>" name="Time_Out" placeholder="00:00:00" Required>
+      <label for="Username">Username</label>
+      <input id="Username" type="text" value="<?php echo $data['Username'] ?>" name="Username" Required>
   </div>
 
   <div class='w3-container'>

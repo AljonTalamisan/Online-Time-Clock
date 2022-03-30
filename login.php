@@ -1,27 +1,27 @@
 <?php
 // Initialize the session
 session_start();
- 
+
 // Check if the user is already logged in, if yes then redirect him to welcome page
 if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
     header("location: attendance.php");
     exit;
 }
- 
+
 // Include config file
 require_once "config.php";
 $username = $password = "";
 $username_err = $password_err = $login_err = "";
- 
+
 if( isset($_POST['login_btn'])){  // someone click login btn
-	
+
 	    // Check if username is empty
     if(empty(trim($_POST["username"]))){
         $username_err = "Please enter username.";
     } else{
         $username = trim($_POST["username"]);
     }
-    
+
     // Check if password is empty
     if(empty(trim($_POST["password"]))){
         $password_err = "Please enter your password.";
@@ -29,7 +29,7 @@ if( isset($_POST['login_btn'])){  // someone click login btn
         $password = trim($_POST["password"]);
     }
 
-    $username = $_POST['username']; 
+    $username = $_POST['username'];
     //clean is the custom function to remove all harmful code
     $password = $_POST['password'];
 
@@ -38,7 +38,7 @@ if( isset($_POST['login_btn'])){  // someone click login btn
 
     $stmt = mysqli_prepare($link,"SELECT User_ID,Comp_Name,Username,Password,Usertype FROM tb_user WHERE Username = ? ");
 
-    //$connection is your db connection 
+    //$connection is your db connection
     mysqli_stmt_bind_param($stmt, "s", $username);
     mysqli_stmt_execute($stmt);
 
@@ -51,23 +51,24 @@ if( isset($_POST['login_btn'])){  // someone click login btn
         $usertype   = $bind_usertype;
     }
 
-    //  do form validation           
+    //  do form validation
     if($username =="" or $password =="" ){
-        echo 'All Fileds Are Required'; 
+        echo 'All Fileds Are Required';
     }elseif( $username !== $db_username ){
         echo 'username not existed';
     }else{
     if( password_verify($password, $db_password)){
 	session_start();
-    // assuming your using password_hash function to verify , or you can just use simply compare $password == db_password                                           
+    // assuming your using password_hash function to verify , or you can just use simply compare $password == db_password
     // if password_verify return true meaning correct password then save all necessary sessions
 	$_SESSION["loggedin"] = true;
+  $_SESSION["User_ID"] = $bind_id ;
 	$_SESSION["Comp_Name"] = $compname ;
     $_SESSION['Username'] = $db_username ;
     $_SESSION['Usertype'] = $usertype ;
 
-    // first method ->    header('Location: portal.php');      
-    // you can now direct to portal page{1st method } where all admin or normal user can view 
+    // first method ->    header('Location: portal.php');
+    // you can now direct to portal page{1st method } where all admin or normal user can view
     // or you can now do separate redirection (2nd method below )
     // remember $user_role  will == 'admin' or 'normal_user'
 if( $usertype == 'admin' ){
@@ -80,10 +81,10 @@ if( $usertype == 'admin' ){
        echo 'incorrect password';
     }
 
- }                                  
-    }  //  end of post request 
+ }
+    }  //  end of post request
 ?>
- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,7 +99,7 @@ if( $usertype == 'admin' ){
     <style>
         body{ font: 14px sans-serif; }
         .wrapper{ width: 360px; padding: 20px; }
-		
+
 		.content {
   max-width: 800px;
   margin: auto;
@@ -110,7 +111,7 @@ if( $usertype == 'admin' ){
   padding: 10px;
 }
 table.center {
-  margin-left: auto; 
+  margin-left: auto;
   margin-right: auto;
 }
 footer {
@@ -142,7 +143,7 @@ h1
 {
 	color:darkred;
 }
-		
+
     </style>
 </head>
 <body>
@@ -151,17 +152,17 @@ h1
 		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
 		 		<a href="ADMINlogin.php" class="ui green button w3-center">go to Admin Login</a>
 	</div>
-	
+
 	<p></p>
-	
+
     <div class="wrapper w3-container content">
         <h2>Regular Login</h2>
         <p>Please fill in your credentials to login.</p>
 
-        <?php 
+        <?php
         if(!empty($login_err)){
             echo '<div class="alert alert-danger">' . $login_err . '</div>';
-        }        
+        }
         ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
@@ -169,7 +170,7 @@ h1
                 <label>Username</label>
                 <input type="text" name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $username; ?>">
                 <span class="invalid-feedback"><?php echo $username_err; ?></span>
-            </div>    
+            </div>
             <div class="form-group">
                 <label>Password</label>
                 <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>">
@@ -180,9 +181,9 @@ h1
             </div>
         </form>
     </div>
-	
+
 	<footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-</footer>	
+</footer>
 </body>
 </html>

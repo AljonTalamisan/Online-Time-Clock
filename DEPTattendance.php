@@ -4,7 +4,7 @@ session_start();
 
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: index.php");
+    header("location: DEPTlogin.php");
     exit;
 }
 ?>
@@ -13,15 +13,12 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 <link rel="stylesheet" href="w3.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
 <script src="jquery-3.5.1.min.js"></script>
-<!--<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>-->
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="sweetalert2.all.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
     if ( window.history.replaceState ) {
         window.history.replaceState( null, null, window.location.href );
     }
 </script>
-
 <!--- Responsive ---->
 <meta name="viewport" content="width=device-width, initial-scale=1">
  <style>
@@ -81,9 +78,9 @@ h1
 
 	<div class="w3-container w3-2019-orange-tiger content" style='background-color:#f2552c' id="top">
 		<img src="../FBlogo.png" width="100" height="50" class="center" />
-		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
+		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock (DEPT HEAD)</h2>
     <a href="ADMINlogout.php" class="ui primary button w3-right">Sign Out</a>
-    <h5 class="w3-left"> Welcome <i><?php echo htmlspecialchars($_SESSION['FirstName']) . ' ' . htmlspecialchars($_SESSION['LastName']) ?></i> </h5>
+    <h5 class="w3-left"> Welcome: <i><?php echo htmlspecialchars($_SESSION['FirstName']) . ' ' . htmlspecialchars($_SESSION['LastName']) ?></i> </h5>
 	</div>
 
 	<p></p>
@@ -112,12 +109,11 @@ $dt=date('Y-m-d');
 $dm=date('H:i');
 
 $username=$_SESSION['Username'];
-$firstname=$_SESSION['FirstName'];
 
 $set = "SELECT Comp_Name from tb_comp_name"; //
 $resultset = mysqli_query($conn, $set);
 
-$latest = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Username = '$username' ORDER BY Track_ID DESC LIMIT 1";
+$latest = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Track_ID = (SELECT Max(Track_ID) from tb_user_track) and Username = '$username'";
 $latestset = mysqli_query($conn, $latest);
 
 	while($rowlatest = mysqli_fetch_assoc($latestset)) {
@@ -149,8 +145,6 @@ $latestset2 = mysqli_query($conn, $latest2);
 	?>
 
 
-
-
 <div class="ui inverted container segment text"><br>
 <form name="Employee Form" class="w3-container" method="post">
 
@@ -159,13 +153,13 @@ echo '<input name="date" type="hidden" value= "' . $dt . '">';
 echo '<input name="time" type="hidden" value= "' . $dm . '">';
 ?>
 
-	<p><label><b>Department </b><b class="w3-text-red">*</b></label></p>
+	<p><label><b>Deparment: </b><b class="w3-text-red">*</b></label></p>
 
-	<input type=text name="company_list" class="w3-input w3-border w3-round-large" readonly required placeholder="Department" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Department']) ?>"><br>
+	<input type=text name="company_list" class="w3-input w3-border w3-round-large" readonly required placeholder="Company Name" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Department']) ?>"><br>
 	<p></p>
 
-	<p><label><b>Employee's Username: </b><b class="w3-text-red">*</b></label></p>
-		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required placeholder="Employee's Username" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username'])?>"><br>
+	<p><label><b>Employee Name: </b><b class="w3-text-red">*</b></label></p>
+		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required placeholder="Employee Name" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username']) ?>"><br>
 
 	<input class="ui green button submit" name="submit2" type="submit" value="Clock In" id="submit2">
 	<input class="ui red button submit" name="submit3" type="submit" value="Clock Out" id="submit3">
@@ -198,7 +192,7 @@ if (mysqli_num_rows($result) > 0) {
 
 ?>
 	<script> //popup message had already clocked in
-swal.fire({
+swal({
 text: "This Employee had already Clocked In!",
 icon: "error",
 });
@@ -213,7 +207,7 @@ else if (mysqli_num_rows($result2) == 0) {
 
 	?>
 	<script> //popup message employee not yet registered
-swal.fire({
+swal({
 text: "This Employee is not yet Registered!",
 icon: "error",
 });
@@ -231,7 +225,7 @@ if (mysqli_query($conn, $sql))
 {
 ?>
 	<script>
-swal.fire({
+swal({
 title: "SUCCESS",
 text: "Employee Successfully Clocked In!",
 icon: "success"
@@ -279,7 +273,7 @@ if (mysqli_query($conn, $sql))
 	if(mysqli_query($conn, $sqlcalculate)){
 ?>
 	<script>
-swal.fire({
+swal({
 title: "SUCCESS",
 text: "Employee Successfully Clocked Out!",
 icon: "success"
@@ -298,7 +292,7 @@ else {
 
 ?>
 	<script> //popup message had already clocked in
-swal.fire({
+swal({
 text: "This Employee had already Clocked Out!",
 icon: "error",
 });
@@ -365,12 +359,11 @@ function myFunction() {
 </script>
 
 <p></p>
-
 <footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-	<a href="reset-password2.php" class="btn btn-warning w3-button">Change Password</a>
-	<a href="dashboard.php" class="btn btn-warning w3-button">Dashboard</a>
-	<a href="logout.php" class="btn btn-warning w3-button">Sign Out</a>
+	<a href="reset-password3.php" class="btn btn-warning w3-button">Reset Password</a>
+	<a href="DEPTdashboard.php" class="btn btn-warning w3-button">Dashboard</a>
+	<a href="RegularRegister3.php" class="btn btn-warning w3-button">Register Regular User</a>
 </footer>
 </body>
 </html>

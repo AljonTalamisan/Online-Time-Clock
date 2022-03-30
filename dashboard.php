@@ -77,7 +77,7 @@ $resultname = mysqli_query($conn, $choosename);
 <h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">FullyBooked Time Track Dashboard</h2>
 <h1 class="w3-center w3-padding w3-black w3-opacity-min">REPORT</h1>
 <a href="ADMINlogout.php" class="ui primary button w3-right">Sign Out</a>
-<h5 class="w3-left"> Welcome <i><?php echo htmlspecialchars($_SESSION['Username']) ?></i> </h5>
+<h5 class="w3-left"> Welcome <i><?php echo htmlspecialchars($_SESSION['FirstName']) . ' ' . htmlspecialchars($_SESSION['LastName']) ?></i> </h5>
 </div>
 <!------------------ Design for Selecting a Specific Company ----------------------->
 <div class="w3-container content">
@@ -100,7 +100,10 @@ if(isset($_POST['submit'])) {
 $date1 = date("Y-m-d", strtotime($_POST['date1']));
 $date2 = date("Y-m-d", strtotime($_POST['date2']));
 
-$sqldate = "SELECT Track_ID, Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours from tb_user_track where Date BETWEEN '$date1' AND '$date2' and Username='".$_SESSION['Username']."'";
+//$sqldate = "SELECT Track_ID, FirstName, LastName, Username, Department, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours from tb_user_track where Date BETWEEN '$date1' AND '$date2' and Username='".$_SESSION['Username']."'";
+$sqldate = "SELECT tb_user_track.Track_ID, tb_user.FirstName, tb_user.LastName, tb_user_track.Username, tb_user_track.Department, tb_user_track.Date, DATE_FORMAT(tb_user_track.Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(tb_user_track.Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(tb_user_track.Hours,'%H:%i') as Hours from tb_user_track
+INNER JOIN tb_user ON tb_user_track.Username=tb_user.Username
+where tb_user_track.Date BETWEEN '$date1' AND '$date2' and tb_user_track.Username='".$_SESSION['Username']."'";
 $resultdate = mysqli_query($conn, $sqldate);
 
 	if (mysqli_num_rows($resultdate) >= 0) {
@@ -112,32 +115,34 @@ $resultdate = mysqli_query($conn, $sqldate);
 	echo "<div class='w3-container content' id='myDIVset2'>";
 ?>
 <table border='1' class='center w3-table w3-striped' id='dataTable'>
+	<thead>
 			<tr>
 			<th>ID</th>
-			<th>USERNAME</th>
-			<th>COMPANY NAME</th>
+			<th>NAME</th>
+			<th>DEPARTMENT</th>
 			<th>DATE</th>
 			<th>TIME IN</th>
 			<th>TIME OUT</th>
 			<th>HOURS</th>
 			</tr>
-
+</thead>
 <p></p>
 <?php
 
     while($row = mysqli_fetch_assoc($resultdate)) {
 
 ?>
+<tbody>
        <tr>
 		<td><small><?php echo $row['Track_ID']; ?></small></td>
-  		<td><small><?php echo $row['Username']; ?></small></td>
-		<td><small><?php echo $row['Comp_Name']; ?></small></td>
+  	<td><small><?php echo $row['FirstName'] . ' ' . $row['LastName'] ; ?></small></td>
+		<td><small><?php echo $row['Department']; ?></small></td>
 		<td><small><?php echo $row['Date']; ?></small></td>
 		<td><small><?php echo $row['Time_In']; ?></small></td>
 		<td><small><?php echo $row['Time_Out']; ?></small></td>
 		<td><small><?php echo $row['Hours']; ?></small></td>
   		</tr>
-
+</tbody>
     <?php
 
 		}
@@ -173,9 +178,9 @@ $resultdate = mysqli_query($conn, $sqldate);
 
 <!------------- PHP query for checking an employee----------->
 
-<p class="w3-center w3-medium w3-black w3-padding">SELECT EMPLOYEE</p>
+<p class="w3-center w3-medium w3-black w3-padding">EMPLOYEE'S TRACK</p>
 <form name="indexForm2" class="w3-container" method="post">
-		<input type=text name="emp" class="w3-input w3-border w3-round-large" required placeholder="Employee Name" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username']) ?>"><br>
+		<input type=text name="emp" class="w3-input w3-border w3-round-large" readonly required placeholder="Employee Name" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username']) ?>"><br>
 
 <input class="w3-btn submit" name="submit4" type="submit" value="Next" style='background-color:#f2552c'>
 <p></p>
@@ -188,7 +193,10 @@ if(isset($_POST['submit4'])) {
 
 $empname2 = $_POST['emp'];
 
-$comp2 = "SELECT Track_ID, Username, Comp_Name, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In, DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours from tb_user_track where Username = '$empname2'";
+//$comp2 = "SELECT Track_ID, Username, Department, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In, DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours from tb_user_track where Username = '$empname2'";
+$comp2 = "SELECT tb_user_track.Track_ID, tb_user.FirstName, tb_user.LastName, tb_user_track.Username, tb_user_track.Department, tb_user_track.Date, DATE_FORMAT(tb_user_track.Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(tb_user_track.Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(tb_user_track.Hours,'%H:%i') as Hours from tb_user_track
+INNER JOIN tb_user ON tb_user_track.Username=tb_user.Username
+where tb_user_track.Username = '$empname2'";
 $resultset2 = mysqli_query($conn, $comp2);
 
 
@@ -196,38 +204,41 @@ if (mysqli_num_rows($resultset2) > 0) {
 
 // Show the NAME of all employees who did not submit
 	echo "<div class='w3-container content w3-center'>";
-	echo "<div class='w3-center w3-medium'> <b>EMPLOYEE SELECTED :</b> " . $empname2 . "</div>" . "<p></p>";
+	echo "<div class='w3-center w3-medium'> <b>EMPLOYEE SELECTED :</b> "?><?php echo htmlspecialchars($_SESSION['FirstName']) . ' ' . htmlspecialchars($_SESSION['LastName'])?><?php
+	echo "   </div><p></p>";
 	echo "<button onclick='myFunctionSet3()' class='w3-button w3-border w3-hover-deep-orange'>HIDE / SHOW</button>";
 	echo "</div>";
 	echo "<div class='w3-container content' id='myDIVset3'>";
 
 ?>
 <table border='1' class='center w3-table w3-striped' id='dataTable'>
+	<thead>
 			<tr>
 			<th>ID</th>
-			<th>USERNAME</th>
-			<th>COMPANY NAME</th>
+			<th>NAME</th>
+			<th>DEPARTMENT</th>
 			<th>DATE</th>
 			<th>TIME IN</th>
 			<th>TIME OUT</th>
 			<th>HOURS</th>
 			</tr>
-
+</thead>
 <p></p>
 <?php
     while($row = mysqli_fetch_assoc($resultset2)) {
 
 ?>
+<tbody>
        <tr>
 		<td><small><?php echo $row['Track_ID']; ?></small></td>
-  		<td><small><?php echo $row['Username']; ?></small></td>
-		<td><small><?php echo $row['Comp_Name']; ?></small></td>
+  	<td><small><?php echo $row['FirstName'] . ' ' . $row['LastName'] ; ?></small></td>
+		<td><small><?php echo $row['Department']; ?></small></td>
 		<td><small><?php echo $row['Date']; ?></small></td>
 		<td><small><?php echo $row['Time_In']; ?></small></td>
 		<td><small><?php echo $row['Time_Out']; ?></small></td>
 		<td><small><?php echo $row['Hours']; ?></small></td>
   		</tr>
-
+</tbody>
     <?php
 
 		}

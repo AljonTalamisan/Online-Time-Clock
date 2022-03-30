@@ -78,7 +78,7 @@ h1
 
 	<div class="w3-container w3-2019-orange-tiger content" style='background-color:#f2552c' id="top">
 		<img src="../FBlogo.png" width="100" height="50" class="center" />
-		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
+		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock (ADMIN)</h2>
     <a href="ADMINlogout.php" class="ui primary button w3-right">Sign Out</a>
     <h5 class="w3-left"> Welcome <i><?php echo htmlspecialchars($_SESSION['Username']) ?></i> </h5>
 	</div>
@@ -92,7 +92,8 @@ h1
 	<div class="w3-container content">
 	<h2 class="w3-center" id="date" name="date"></h2>
 	<h2 class="w3-center" id="time" name="time"></h2>
-   	</div>
+  </div>
+  <p></p>
 
 <!----------------------------------------------------- Form for Registering Employees on a specific Company -------------------------------------------------------------------------------->
 
@@ -121,16 +122,28 @@ $latestset = mysqli_query($conn, $latest);
 	<div class="w3-container content w3-light-gray w3-opacity-min">
 	<h4 class="w3-center "><b class="w3-text-black">STATUS: </b><b class="w3-text-blue"><?php echo $rowlatest['Action']; ?></b></h4>
   <h4 class="w3-center "><b class="w3-text-black">DATE: </b><b class="w3-text-blue"><?php echo $rowlatest['Date']; ?></b></h4>
-	<h4 class="w3-center "><b class="w3-text-black">TIME-IN: </b><b class="w3-text-green"><?php echo $rowlatest['Time_In']; ?></b></h4>
-	<h4 class="w3-center "><b class="w3-text-black">TIME-OUT: </b><b class="w3-text-red"><?php echo $rowlatest['Time_Out']; ?></b></h4>
+
 	</div>
 	<?php
 
 		}
 
 	?>
+<?php
 
-?>
+$latest2 = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Date = CURDATE() and Username = '$username'";
+$latestset2 = mysqli_query($conn, $latest2);
+
+	while($rowlatest2 = mysqli_fetch_assoc($latestset2)) {
+	?>
+	<div class="w3-container content w3-light-gray w3-opacity-min">
+	<h4 class="w3-center "><b class="w3-text-black"></b><b class="w3-text-green"><?php echo $rowlatest2['Time_In']; ?></b> - <b class="w3-text-red"><?php echo $rowlatest2['Time_Out']; ?></b></h4>
+	</div>
+	<?php
+
+		}
+
+	?>
 
 <div class="ui inverted container segment text"><br>
 <form name="Employee Form" class="w3-container" method="post">
@@ -140,9 +153,9 @@ echo '<input name="date" type="hidden" value= "' . $dt . '">';
 echo '<input name="time" type="hidden" value= "' . $dm . '">';
 ?>
 
-	<p><label><b>Company Name: </b><b class="w3-text-red">*</b></label></p>
+	<p><label><b>Department: </b><b class="w3-text-red">*</b></label></p>
 
-	<input type=text name="company_list" class="w3-input w3-border w3-round-large" required placeholder="Company Name" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Comp_Name']) ?>"><br>
+	<input type=text name="company_list" class="w3-input w3-border w3-round-large" readonly required placeholder="Company Name" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Department']) ?>"><br>
 	<p></p>
 
 	<p><label><b>Employee Name: </b><b class="w3-text-red">*</b></label></p>
@@ -152,7 +165,7 @@ echo '<input name="time" type="hidden" value= "' . $dm . '">';
 	<input class="ui red button submit" name="submit3" type="submit" value="Clock Out" id="submit3">
 </form>
 </div>
-	<br><br><br><br>
+	<br><br><br><br><br><br><br><br>
 <p></p>
 
 <!----------------------------------------------------- PHP CODE For Employee's Clock In -------------------------------------------------------------------------------->
@@ -167,12 +180,12 @@ $date = date('Y-m-d');
 $time = date('H:i');
 
 //check if the employee had already clocked in today
-$sqlcheckemployee = "SELECT Comp_Name, Username, Date, Action FROM tb_user_track WHERE Date = '$date' AND Username = '$employeename' AND Action = 'IN'";
+$sqlcheckemployee = "SELECT Department, Username, Date, Action FROM tb_user_track WHERE Date = '$date' AND Username = '$employeename' AND Action = 'IN'";
 $result = mysqli_query($conn, $sqlcheckemployee);
 
 
 //check if the name is already been registered on database
-$sqlcheckemployee2 = "SELECT Comp_Name, Username FROM tb_user WHERE Comp_Name = '$companyname' AND Username = '$employeename'";
+$sqlcheckemployee2 = "SELECT Department, Username FROM tb_user WHERE Department = '$companyname' AND Username = '$employeename'";
 $result2 = mysqli_query($conn, $sqlcheckemployee2);
 
 if (mysqli_num_rows($result) > 0) {
@@ -205,7 +218,7 @@ icon: "error",
 
 else
 {
-$sql = "insert into tb_user_track(Comp_Name, Username, Date, Time_In, Action) values ('$companyname', '$employeename', '$date', '$time', 'IN')";
+$sql = "insert into tb_user_track(Department, Username, Date, Time_In, Action) values ('$companyname', '$employeename', '$date', '$time', 'IN')";
 
 
 if (mysqli_query($conn, $sql))
@@ -247,7 +260,7 @@ $date2 = date('Y-m-d');
 $time2 = date('H:i');
 
 //check if the employee had already clocked in today
-$sqlout = "SELECT Comp_Name, Username, Date, Action, Time_Out FROM tb_user_track WHERE Date = '$date2' AND Username = '$employeename2' AND Action = 'IN'";
+$sqlout = "SELECT Department, Username, Date, Action, Time_Out FROM tb_user_track WHERE Date = '$date2' AND Username = '$employeename2' AND Action = 'IN'";
 $result = mysqli_query($conn, $sqlout);
 
 if (mysqli_num_rows($result) > 0) {
@@ -348,10 +361,12 @@ function myFunction() {
 <p></p>
 <footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-	<a href="reset-password.php" class="btn btn-warning w3-button">Reset Password</a>
+	<a href="reset-password.php" class="btn btn-warning w3-button">Change Password</a>
 	<a href="ADMINdashboard.php" class="btn btn-warning w3-button">Dashboard</a>
-	<a href="RegularRegister.php" class="btn btn-warning w3-button">Register Regular User</a>
-	<a href="ADMINregister.php" class="btn btn-warning w3-button">Create Admin Account</a>
+	<a href="RegularRegister2.php" class="btn btn-warning w3-button">Register Regular User</a>
+	<a href="ADMINregister2.php" class="btn btn-warning w3-button">Create Admin Account</a>
+  <a href="DEPTregister.php" class="btn btn-warning w3-button">Create Dept Head Account</a>
+  <a href="Masterlist.php" class="btn btn-warning w3-button">Masterlist</a>
 </footer>
 </body>
 </html>

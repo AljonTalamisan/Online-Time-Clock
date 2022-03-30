@@ -117,7 +117,7 @@ $firstname=$_SESSION['FirstName'];
 $set = "SELECT Comp_Name from tb_comp_name"; //
 $resultset = mysqli_query($conn, $set);
 
-$latest = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Username = '$username' ORDER BY Track_ID DESC LIMIT 1";
+$latest = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Track_ID = (SELECT Max(Track_ID) from tb_user_track) and Username = '$username'";
 $latestset = mysqli_query($conn, $latest);
 
 	while($rowlatest = mysqli_fetch_assoc($latestset)) {
@@ -125,31 +125,15 @@ $latestset = mysqli_query($conn, $latest);
 	<div class="w3-container content w3-light-gray w3-opacity-min">
 	<h4 class="w3-center "><b class="w3-text-black">STATUS: </b><b class="w3-text-blue"><?php echo $rowlatest['Action']; ?></b></h4>
   <h4 class="w3-center "><b class="w3-text-black">DATE: </b><b class="w3-text-blue"><?php echo $rowlatest['Date']; ?></b></h4>
-
+	<h4 class="w3-center "><b class="w3-text-black">TIME-IN: </b><b class="w3-text-green"><?php echo $rowlatest['Time_In']; ?></b></h4>
+	<h4 class="w3-center "><b class="w3-text-black">TIME-OUT: </b><b class="w3-text-red"><?php echo $rowlatest['Time_Out']; ?></b></h4>
 	</div>
 	<?php
 
 		}
 
 	?>
-<?php
-
-$latest2 = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Date = CURDATE() and Username = '$username'";
-$latestset2 = mysqli_query($conn, $latest2);
-
-	while($rowlatest2 = mysqli_fetch_assoc($latestset2)) {
-	?>
-	<div class="w3-container content w3-light-gray w3-opacity-min">
-	<h4 class="w3-center "><b class="w3-text-black"></b><b class="w3-text-green"><?php echo $rowlatest2['Time_In']; ?></b> - <b class="w3-text-red"><?php echo $rowlatest2['Time_Out']; ?></b></h4>
-	</div>
-	<?php
-
-		}
-
-	?>
-
-
-
+  ?>
 
 <div class="ui inverted container segment text"><br>
 <form name="Employee Form" class="w3-container" method="post">
@@ -161,7 +145,7 @@ echo '<input name="time" type="hidden" value= "' . $dm . '">';
 
 	<p><label><b>Department </b><b class="w3-text-red">*</b></label></p>
 
-	<input type=text name="company_list" class="w3-input w3-border w3-round-large" readonly required placeholder="Department" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Department']) ?>"><br>
+	<input type=text name="company_list" class="w3-input w3-border w3-round-large" required placeholder="Department" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Department']) ?>"><br>
 	<p></p>
 
 	<p><label><b>Employee's Username: </b><b class="w3-text-red">*</b></label></p>
@@ -365,10 +349,9 @@ function myFunction() {
 </script>
 
 <p></p>
-
 <footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-	<a href="reset-password2.php" class="btn btn-warning w3-button">Change Password</a>
+	<a href="reset-password2.php" class="btn btn-warning w3-button">Reset Password</a>
 	<a href="dashboard.php" class="btn btn-warning w3-button">Dashboard</a>
 	<a href="logout.php" class="btn btn-warning w3-button">Sign Out</a>
 </footer>

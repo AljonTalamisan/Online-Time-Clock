@@ -12,7 +12,7 @@
     <style>
         body{ font: 14px sans-serif; }
         .wrapper{ width: 360px; padding: 20px; }
-		
+
 		.content {
   max-width: 800px;
   margin: auto;
@@ -24,7 +24,7 @@
   padding: 10px;
 }
 table.center {
-  margin-left: auto; 
+  margin-left: auto;
   margin-right: auto;
 }
 footer {
@@ -56,10 +56,10 @@ h1
 {
 	color:darkred;
 }
-		
+
     </style>
 </head>
- 
+
 
 <body>
 	<div class="w3-container w3-2019-orange-tiger content" style='background-color:#f2552c' id="top">
@@ -67,21 +67,21 @@ h1
 		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
 	</div>
 <?php
- 
+
 // Include config file
 require_once "config.php";
-$username = $password = "";
+$username = $password = $firstname = $middlename = $lastname = $department = $employee_no ="";
 $username_err = $password_err = $login_err = "";
- 
+
 if( isset($_POST['login_btn'])){  // someone click login btn
-	
+
 	    // Check if username is empty
     if(empty(trim($_POST["username"]))){
         $username_err = "Please enter username.";
     } else{
         $username = trim($_POST["username"]);
     }
-    
+
     // Check if password is empty
     if(empty(trim($_POST["password"]))){
         $password_err = "Please enter your password.";
@@ -89,52 +89,85 @@ if( isset($_POST['login_btn'])){  // someone click login btn
         $password = trim($_POST["password"]);
     }
 
-    $username = $_POST['username']; 
+    $username = $_POST['username'];
     //clean is the custom function to remove all harmful code
     $password = $_POST['password'];
 
 
     // run query to get db username & password i am using prepare stmt for more secure , you can use mysqli_fetch_array , but need to implement mysql_real_escape_string for sql injection
 
-    $stmt = mysqli_prepare($link,"SELECT User_ID,Comp_Name,Username,Password,Usertype FROM tb_user WHERE Username = ? ");
+    $stmt = mysqli_prepare($link,"SELECT User_ID,EmployeeNo,Firstname,Middlename,Lastname,Department,Username,Password,Usertype FROM tb_user WHERE Username = ? ");
 
-    //$connection is your db connection 
+    //$connection is your db connection
     mysqli_stmt_bind_param($stmt, "s", $username);
     mysqli_stmt_execute($stmt);
 
-    mysqli_stmt_bind_result($stmt, $bind_id,$bind_compname,$bind_username,$hashed_password,$bind_usertype);
+    mysqli_stmt_bind_result($stmt, $bind_id,$bind_employee_no,$bind_firstname,$bind_middlename,$bind_lastname,$bind_department,$bind_username,$bind_password,$bind_usertype);
 
     while (mysqli_stmt_fetch($stmt)) {
-		$id = $bind_id;
-		$compname = $bind_compname;
-        $db_username = $bind_username;
-        $db_password = $hashed_password;
-        $usertype   = $bind_usertype;
+    $userid = $bind_id;
+    $employee_no = $bind_employee_no;
+    $firstname = $bind_firstname;
+    $middlename = $bind_middlename;
+    $lastname = $bind_lastname;
+    $department = $bind_department;
+    $db_username = $bind_username;
+    $db_password = $bind_password;
+    $usertype = $bind_usertype;
     }
 
-    //  do form validation           
+    //  do form validation
     if($username =="" or $password =="" ){
-        echo ''; 
-    }else{
-    if( password_verify($password, $hashed_password)){
-	session_start();
-    // assuming your using password_hash function to verify , or you can just use simply compare $password == db_password                                           
-    // if password_verify return true meaning correct password then save all necessary sessions
-	$_SESSION["loggedin"] = true;
-	$_SESSION['Comp_Name'] = $compname;
-    $_SESSION['Username'] = $db_username ;
-    $_SESSION['Usertype'] = $usertype ;
-	$_SESSION['User_ID'] = $id ;
+      ?>
+      <script>
 
-    // first method ->    header('Location: portal.php');      
-    // you can now direct to portal page{1st method } where all admin or normal user can view 
+      swal({
+      text: "All Fields are Required",
+      icon: "error",
+      });
+
+      </script>
+      <?php
+    }
+    elseif( $username !== $bind_username ){
+      ?>
+      <script>
+
+      swal({
+      text: "Please enter a valid username",
+      icon: "error",
+      });
+
+      </script>
+      <?php
+    }else{
+    if( password_verify($password, $db_password)){
+  session_start();
+    // assuming your using password_hash function to verify , or you can just use simply compare $password == db_password
+    // if password_verify return true meaning correct password then save all necessary sessions
+  $_SESSION["loggedin"] = true;
+  $_SESSION["User_ID"] = $userid;
+  $_SESSION["Department"] = $department;
+    $_SESSION['Username'] = $db_username;
+    $_SESSION['Usertype'] = $usertype;
+    $_SESSION['FirstName'] = $firstname;
+    $_SESSION['MiddleName'] = $middlename;
+    $_SESSION['LastName'] = $lastname;
+    $_SESSION['EmployeeNo'] = $employee_no;
+
+    // first method ->    header('Location: portal.php');
+    // you can now direct to portal page{1st method } where all admin or normal user can view
     // or you can now do separate redirection (2nd method below )
     // remember $user_role  will == 'admin' or 'normal_user'
 if( $usertype == 'admin' ){
     header('Location: ADMINattendance.php');
 }elseif(  $usertype == 'user'  ){
     header('Location: attendance.php');
-}else{
+}
+elseif(  $usertype == 'head'  ){
+    header('Location: DEPTattendance.php');
+}
+else{
 // Password is not valid, display a generic error message
  $login_err = "Invalid username or password.";
  }
@@ -142,29 +175,29 @@ if( $usertype == 'admin' ){
 }else{
 ?>
 <script>
-	
+
 swal({
-text: "Wrong Credentials!",
+text: "Your password is incorrect. Please try again",
 icon: "error",
 });
-	
+
 </script>
 <?php
     }
 
- }                                  
-    }  //  end of post request 
-?>	
+ }
+    }  //  end of post request
+?>
 	<p></p>
-	
+
     <div class="wrapper w3-container content">
         <h2>Login</h2>
         <p>Please fill in your credentials to login.</p>
 
-        <?php 
+        <?php
         if(!empty($login_err)){
             echo '<div class="alert alert-danger">' . $login_err . '</div>';
-        }        
+        }
         ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
@@ -172,7 +205,7 @@ icon: "error",
                 <label>Username</label>
                 <input type="text" name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $username; ?>">
                 <span class="invalid-feedback"><?php echo $username_err; ?></span>
-            </div>    
+            </div>
             <div class="form-group">
                 <label>Password</label>
                 <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>">
@@ -183,9 +216,9 @@ icon: "error",
             </div>
         </form>
     </div>
-	
+
 	<footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-</footer>	
+</footer>
 </body>
 </html>
