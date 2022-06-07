@@ -70,7 +70,7 @@ input, label {
 
   $id = $_GET['id']; // get id through query string
 
-  $qry = mysqli_query($conn,"select Username, Department, Date, Time_In, Time_Out, DATE_FORMAT(Hours,'%H:%i') from tb_user_track where Track_ID='$id'"); // select query
+  $qry = mysqli_query($conn,"select Username, Department, Date, Time_In, Time_Out, DATE_FORMAT(Hours,'%H:%i'), Note from tb_user_track where Track_ID='$id'"); // select query
 
   $data = mysqli_fetch_array($qry); // fetch data
 
@@ -81,8 +81,9 @@ input, label {
   	$Date = $_POST['Date'];
   	$Time_In = $_POST['Time_In'];
   	$Time_Out = $_POST['Time_Out'];
+    $Note = $_POST['Note'];
 
-      $edit = "update tb_user_track set Username='$Username', Department='$Comp_Name', Date='$Date', Time_In='$Time_In', Time_Out='$Time_Out' where Track_ID='$id'";
+    $edit = "update tb_user_track set Username='$Username', Department='$Comp_Name', Date='$Date', Time_In='$Time_In', Time_Out='$Time_Out', Note='$Note' where Track_ID='$id'";
   	$resultedit = mysqli_query($conn, $edit);
 
   	$sqlcalculate  = "UPDATE tb_user_track SET Hours = TIMEDIFF(Time_Out, Time_In) WHERE Track_ID='$id'";
@@ -146,6 +147,10 @@ input, label {
   <div style="float:left;">
       <label for="Time_Out">Time-Out</label>
       <input id="Time_Out" type="text" value="<?php echo $data['Time_Out'] ?>" name="Time_Out" placeholder="00:00:00" Required>
+  </div>
+  <div style="float:left;">
+      <label for="Note">Note</label>
+      <input id="Note" type="text" value="<?php echo $data['Note'] ?>" name="Note" placeholder="" >
   </div>
 
   <div class='w3-container'>

@@ -1,32 +1,32 @@
 <?php
 // Initialize the session
 session_start();
- 
+
 // Check if the user is logged in, otherwise redirect to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: dashboard.php");
     exit;
 }
- 
+
 // Include config file
 require_once "config.php";
- 
+
 // Define variables and initialize with empty values
 $new_password = $confirm_password = "";
 $new_password_err = $confirm_password_err = "";
- 
+
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
- 
+
     // Validate new password
     if(empty(trim($_POST["new_password"]))){
-        $new_password_err = "Please enter the new password.";     
+        $new_password_err = "Please enter the new password.";
     } elseif(strlen(trim($_POST["new_password"])) < 6){
         $new_password_err = "Password must have atleast 6 characters.";
     } else{
         $new_password = trim($_POST["new_password"]);
     }
-    
+
     // Validate confirm password
     if(empty(trim($_POST["confirm_password"]))){
         $confirm_password_err = "Please confirm the password.";
@@ -36,20 +36,20 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             $confirm_password_err = "Password did not match.";
         }
     }
-        
+
     // Check input errors before updating the database
     if(empty($new_password_err) && empty($confirm_password_err)){
         // Prepare an update statement
         $sql = "UPDATE tb_user SET Password = ? WHERE User_ID = ?";
-        
+
         if($stmt = mysqli_prepare($link, $sql)){
             // Bind variables to the prepared statement as parameters
             mysqli_stmt_bind_param($stmt, "si", $param_password, $param_id);
-            
+
             // Set parameters
             $param_password = password_hash($new_password, PASSWORD_DEFAULT);
             $param_id = $_SESSION["User_ID"];
-            
+
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
                 // Password updated successfully. Destroy the session, and redirect to login page
@@ -64,12 +64,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             mysqli_stmt_close($stmt);
         }
     }
-    
+
     // Close connection
     mysqli_close($link);
 }
 ?>
- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,7 +84,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <style>
         body{ font: 14px sans-serif; }
         .wrapper{ width: 360px; padding: 20px; }
-		
+
 		.content {
   max-width: 800px;
   margin: auto;
@@ -96,7 +96,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
   padding: 10px;
 }
 table.center {
-  margin-left: auto; 
+  margin-left: auto;
   margin-right: auto;
 }
 footer {
@@ -128,21 +128,23 @@ h1
 {
 	color:darkred;
 }
-		
+
     </style>
 </head>
 <body>
 	<div class="w3-container w3-2019-orange-tiger content" style='background-color:#f2552c' id="top">
 		<img src="../FBlogo.png" width="100" height="50" class="center" />
 		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
+    		  <h5 class="w3-left w3-text-white"> Welcome <i><?php echo htmlspecialchars($_SESSION['Username']) ?></i> </h5>
+    <a href="ADMINlogout.php" class="ui primary button w3-right">Sign Out</a>
 	</div>
-	
+
 	<p></p>
-	
+
     <div class="wrapper w3-container content">
         <h2>Reset Password</h2>
         <p>Please fill out this form to reset your password.</p>
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"> 
+        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
                 <label>New Password</label>
                 <input type="password" name="new_password" class="form-control <?php echo (!empty($new_password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $new_password; ?>">
@@ -158,10 +160,14 @@ h1
                 <a class="btn btn-link ml-2 w3-text-grey" href="dashboard.php">Cancel</a>
             </div>
         </form>
-    </div> 
-	
-	<footer class="w3-container" style='background-color:#f2552c'><p></p>
-	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>	
-	</footer>
+    </div>
+
+    <footer class="w3-container" style='background-color:#f2552c'><p></p>
+    	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
+      <br>
+      <a href="attendance.php" class="ui primary button">Clock In</a>
+    	<a href="reset-password2.php" class="ui primary button">Change Password</a>
+    	<a href="dashboard.php" class="ui primary button">Dashboard</a>
+    </footer>
 </body>
 </html>

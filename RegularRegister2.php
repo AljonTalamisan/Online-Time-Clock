@@ -149,6 +149,7 @@ if(empty(trim($_POST["employee_number"]))){
     <title>Sign Up</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="w3.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
 	<script src="jquery-3.5.1.min.js"></script>
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -284,6 +285,7 @@ h1
             </div>
 
         </form>
+        <br><br><br><br><br><br><br><br>
     </div>
 <br>  <br>   <br>   <br>   <br>
 

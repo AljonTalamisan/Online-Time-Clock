@@ -1,41 +1,80 @@
 <?php
+// Initialize the session
 session_start();
 
 
+// Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["Username"]))
 {
 	header("location:index.php");
 }
-
 ?>
 <!DOCTYPE html>
 <html>
-<link rel="stylesheet" href="w3.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script src="tableExport/tableExport.js"></script>
-<script type="text/javascript" src="tableExport/jquery.base64.js"></script>
-<script src="js/export.js"></script>
-<script src="js/export2.js"></script>
-<!--- Responsive ---->
-<meta name="viewport" content="width=device-width, initial-scale=1">
- <style>
-.content {
-  max-width: 1000px;
-  margin: auto;
-  background: white;
-  padding: 10px;
-}
-.content2 {
-  max-width: 1000px;
-  margin: auto;
-  background: white;
-  padding: 10px;
-}
-table.center {
-  margin-left: auto;
-  margin-right: auto;
-}
+ <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard</title>
+		 <link rel="stylesheet" href="w3.css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.js"></script>
+
+  <!-- bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous"/>
+
+
+
+  <!-- jQuery Library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js" integrity="sha512-s5u/JBtkPg+Ff2WEr49/cJsod95UgLHbC00N/GglqdQuLnYhALncz8ZHiW/LxDRGduijLKzeYb7Aal9h3codZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+
+
+  <!-- jQuery UI CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker-standalone.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker-standalone.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+
+  <!-- Responsive CSS -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css">
+
+  <!-- jQuery UI JS -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://markcell.github.io/jquery-tabledit/assets/js/tabledit.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+
+  <!-- Responsive JS-->
+  <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+
+
+</head>
+  <style>
+
+body{ font: 14px sans-serif; }
+
 footer {
    position: fixed;
    left: 0;
@@ -44,295 +83,179 @@ footer {
    color: white;
    text-align: center;
 }
-.center2 {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;
-}
-body {
-    margin-bottom:100px;
-}
+  </style>
+  <body class="">
 
-</style>
-<title>FullyBooked Dashboard</title>
-<body class="w3-theme-l2" id="top">
+  <div class="card container" style='background-color:#f2552c' id="top">
+    <img src="../FBlogo.png" class="img-fluid rounded mx-auto d-block" alt="...">
+		<h2 class="h2 text-center text-light">Fully Booked Online Time Clock</h2>
+		<h5 class="w3-left w3-text-white"> Welcome <i><?php echo htmlspecialchars($_SESSION['Username']) ?></i> </h5>
+	</div>
 
-<?php
 
-include 'db_con.php';
 
-$conn = OpenCon();
+  <div class="d-grid gap-2 d-md-block container">
+  <a href="ADMINlogout.php" class="btn btn-primary" type="button">Sign Out</a>
+  </div>
 
-$chooseset = "SELECT Comp_Name from tb_comp_name"; //
-$resultsetchoose = mysqli_query($conn, $chooseset);
 
-$choosename = "SELECT Username from tb_user where Username='".$_SESSION['Username']."'"; //
-$resultname = mysqli_query($conn, $choosename);
-
-?>
-<!------------------ Background Design for the title ------------------>
-<div class="w3-container w3-2019-orange-tiger content2" style='background-color:#f2552c'>
-	<img src="../FBlogo.png" width="100" height="60" class="center2" />
-<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">FullyBooked Time Track Dashboard</h2>
-<h1 class="w3-center w3-padding w3-black w3-opacity-min">REPORT</h1>
-<a href="ADMINlogout.php" class="ui primary button w3-right">Sign Out</a>
-<h5 class="w3-left"> Welcome <i><?php echo htmlspecialchars($_SESSION['FirstName']) . ' ' . htmlspecialchars($_SESSION['LastName']) ?></i> </h5>
+	<br />
+	<div class="container">
+		<div class="row">
+			 <div class="col-lg-12">
+	<table>
+	<tr>
+		<td>
+			 <input type='text' readonly id='search_fromdate' class="datepicker form-control" placeholder='From'>
+		</td>
+		<td>
+			 <input type='text' readonly id='search_todate' class="datepicker form-control" placeholder='To'>
+		</td>
+		<td>
+			 <input type='button' id="btn_search" value="Search" class="btn btn-info">
+		</td>
+	</tr>
+</table>
+		 </div>
+	 </div>
 </div>
-<!------------------ Design for Selecting a Specific Company ----------------------->
-<div class="w3-container content">
-
-<!------------- PHP query for checking the date and displaying the result----------->
-<p class="w3-center w3-medium w3-black w3-padding">SELECT A DATE</p>
-<form name="indexForm" class="w3-container" method="post">
-           <label>Date:</label>
-            <input type="date" class="form-control" placeholder="Start"  name="date1"/>
-            <label>To</label>
-            <input type="date" class="form-control" placeholder="End"  name="date2"/>
-<!-----<input type="date" name="today">------>
-<input class="w3-btn submit" name="submit" type="submit" value="Next" style='background-color:#f2552c'>
-<p></p>
-</form>
-<?php
-
-if(isset($_POST['submit'])) {
-
-$date1 = date("Y-m-d", strtotime($_POST['date1']));
-$date2 = date("Y-m-d", strtotime($_POST['date2']));
-
-//$sqldate = "SELECT Track_ID, FirstName, LastName, Username, Department, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours from tb_user_track where Date BETWEEN '$date1' AND '$date2' and Username='".$_SESSION['Username']."'";
-$sqldate = "SELECT tb_user_track.Track_ID, tb_user.FirstName, tb_user.LastName, tb_user_track.Username, tb_user_track.Department, tb_user_track.Date, DATE_FORMAT(tb_user_track.Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(tb_user_track.Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(tb_user_track.Hours,'%H:%i') as Hours from tb_user_track
-INNER JOIN tb_user ON tb_user_track.Username=tb_user.Username
-where tb_user_track.Date BETWEEN '$date1' AND '$date2' and tb_user_track.Username='".$_SESSION['Username']."'";
-$resultdate = mysqli_query($conn, $sqldate);
-
-	if (mysqli_num_rows($resultdate) >= 0) {
-    // output data of each row
-	echo "<div class='w3-container content w3-center'>";
-	echo "<div class='w3-center w3-medium'> <b>DATE SELECTED :</b> " . $date1 .' to: '. $date2 . "</div>" . "<p></p>";
-	echo "<button onclick='myFunctionSet2()' class='w3-button w3-border w3-hover-deep-orange'>HIDE / SHOW</button>";
-	echo "</div>";
-	echo "<div class='w3-container content' id='myDIVset2'>";
-?>
-<table border='1' class='center w3-table w3-striped' id='dataTable'>
-	<thead>
-			<tr>
-			<th>ID</th>
-			<th>NAME</th>
-			<th>DEPARTMENT</th>
-			<th>DATE</th>
-			<th>TIME IN</th>
-			<th>TIME OUT</th>
-			<th>HOURS</th>
-			</tr>
-</thead>
-<p></p>
-<?php
-
-    while($row = mysqli_fetch_assoc($resultdate)) {
-
-?>
-<tbody>
-       <tr>
-		<td><small><?php echo $row['Track_ID']; ?></small></td>
-  	<td><small><?php echo $row['FirstName'] . ' ' . $row['LastName'] ; ?></small></td>
-		<td><small><?php echo $row['Department']; ?></small></td>
-		<td><small><?php echo $row['Date']; ?></small></td>
-		<td><small><?php echo $row['Time_In']; ?></small></td>
-		<td><small><?php echo $row['Time_Out']; ?></small></td>
-		<td><small><?php echo $row['Hours']; ?></small></td>
-  		</tr>
-</tbody>
-    <?php
-
-		}
-
-	?>
-
-	</table>
-
-	<?php
-
-	echo "</div>";
-
-	?>
-	<div class="w3-dropdown-hover">
-  		<button class="w3-button" style='background-color:#f2552c'>EXPORT</button>
-  		<div class="w3-dropdown-content w3-bar-block w3-border">
-      		<a  class="w3-bar-item w3-button dataExport" data-type="csv">CSV</a>
-      		<a  class="w3-bar-item w3-button dataExport" data-type="excel">XLS</a>
-			<a  class="w3-bar-item w3-button dataExport" data-type="txt">TXT</a>
-  		</div>
-	</div>
-
-	<?php
-
-	echo "<br>"."<p class='w3-center'>";
-	echo "</p>";
+<br><br>
 
 
-}
-}
-
-?>
-
-<!------------- PHP query for checking an employee----------->
-
-<p class="w3-center w3-medium w3-black w3-padding">EMPLOYEE'S TRACK</p>
-<form name="indexForm2" class="w3-container" method="post">
-		<input type=text name="emp" class="w3-input w3-border w3-round-large" readonly required placeholder="Employee Name" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username']) ?>"><br>
-
-<input class="w3-btn submit" name="submit4" type="submit" value="Next" style='background-color:#f2552c'>
-<p></p>
-</form>
-
-<?php
-
-if(isset($_POST['submit4'])) {
 
 
-$empname2 = $_POST['emp'];
+<div class="container">
+  <div class="row">
+     <div class="col-lg-12">
+            <table id="empTable" class="table table-striped table-bordered dataTable display nowrap responsive" cellspacing="0" style="width:100%">
+                 <thead>
 
-//$comp2 = "SELECT Track_ID, Username, Department, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In, DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours from tb_user_track where Username = '$empname2'";
-$comp2 = "SELECT tb_user_track.Track_ID, tb_user.FirstName, tb_user.LastName, tb_user_track.Username, tb_user_track.Department, tb_user_track.Date, DATE_FORMAT(tb_user_track.Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(tb_user_track.Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(tb_user_track.Hours,'%H:%i') as Hours from tb_user_track
-INNER JOIN tb_user ON tb_user_track.Username=tb_user.Username
-where tb_user_track.Username = '$empname2'";
-$resultset2 = mysqli_query($conn, $comp2);
+                        <tr>
+                        <th>#</th>
+                        <th>USERNAME</th>
+                        <th>DEPARTMENT</th>
+                        <th>DATE</th>
+                        <th>TIME IN</th>
+                        <th>TIME OUT</th>
+                        <th>HOURS</th>
+                        <th>NOTE</th>
 
+                        </tr>
 
-if (mysqli_num_rows($resultset2) > 0) {
+                 </thead>
 
-// Show the NAME of all employees who did not submit
-	echo "<div class='w3-container content w3-center'>";
-	echo "<div class='w3-center w3-medium'> <b>EMPLOYEE SELECTED :</b> "?><?php echo htmlspecialchars($_SESSION['FirstName']) . ' ' . htmlspecialchars($_SESSION['LastName'])?><?php
-	echo "   </div><p></p>";
-	echo "<button onclick='myFunctionSet3()' class='w3-button w3-border w3-hover-deep-orange'>HIDE / SHOW</button>";
-	echo "</div>";
-	echo "<div class='w3-container content' id='myDIVset3'>";
-
-?>
-<table border='1' class='center w3-table w3-striped' id='dataTable'>
-	<thead>
-			<tr>
-			<th>ID</th>
-			<th>NAME</th>
-			<th>DEPARTMENT</th>
-			<th>DATE</th>
-			<th>TIME IN</th>
-			<th>TIME OUT</th>
-			<th>HOURS</th>
-			</tr>
-</thead>
-<p></p>
-<?php
-    while($row = mysqli_fetch_assoc($resultset2)) {
-
-?>
-<tbody>
-       <tr>
-		<td><small><?php echo $row['Track_ID']; ?></small></td>
-  	<td><small><?php echo $row['FirstName'] . ' ' . $row['LastName'] ; ?></small></td>
-		<td><small><?php echo $row['Department']; ?></small></td>
-		<td><small><?php echo $row['Date']; ?></small></td>
-		<td><small><?php echo $row['Time_In']; ?></small></td>
-		<td><small><?php echo $row['Time_Out']; ?></small></td>
-		<td><small><?php echo $row['Hours']; ?></small></td>
-  		</tr>
-</tbody>
-    <?php
-
-		}
-
-	?>
-
-	</table>
-
-	<?php
-
-	echo "</div>";
-
-	?>
-	<div class="w3-dropdown-hover">
-  		<button class="w3-button" style='background-color:#f2552c'>EXPORT</button>
-  		<div class="w3-dropdown-content w3-bar-block w3-border">
-      		<a  class="w3-bar-item w3-button dataExport" data-type="csv">CSV</a>
-      		<a  class="w3-bar-item w3-button dataExport" data-type="excel">XLS</a>
-			<a  class="w3-bar-item w3-button dataExport" data-type="txt">TXT</a>
-  		</div>
-	</div>
-	</div>
-	<?php
-
-}
-
-}
+            </table>
+    </div>
+</div>
 
 
-?>
+    </body>
 
-<script>
-function myFunction() {
-  var x = document.getElementById("myDIV");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
+
+    <script>
+
+    $(document).ready(function(){
+
+       // Datapicker
+       $( ".datepicker" ).datepicker({
+          "dateFormat": "yy-mm-dd",
+          changeYear: true
+       });
+
+       // DataTable
+       var dataTable = $('#empTable').DataTable({
+         'processing': true,
+         'serverSide': true,
+         'serverMethod': 'post',
+         'searching': true,
+         dom: 'Blfrtip',
+				 buttons: [
+          {
+           extend: 'excel',
+           title: 'Excel Data Export'
+         },
+          {
+           extend: 'pdf',
+           title: 'FullyBooked Timesheet',
+           filename: 'PDF Export'
+         },
+          {
+           extend: 'csv',
+           title: 'CSV Data Export'
+         },
+         {
+          extend: 'print',
+        },
+         {
+          extend: 'copy',
+         }
+
+         ],
+          // Set false to Remove default Search Control
+         'ajax': {
+           'url':'ajaxfile2.php',
+           'data': function(data){
+              // Read values
+              var from_date = $('#search_fromdate').val();
+              var to_date = $('#search_todate').val();
+
+              // Append to data
+              data.searchByFromdate = from_date;
+              data.searchByTodate = to_date;
+           }
+         },
+         'columns': [
+            { data: 'Track_ID' },
+            { data: 'Username' },
+            { data: 'Department' },
+            { data: 'Date' },
+            { data: 'Time_In' },
+            { data: 'Time_Out' },
+            { data: 'Hours' },
+            { data: 'Note' },
+         ]
+      });
+ $('#empTable').on('draw.dt', function(){
+ $('#empTable').Tabledit({
+  'url':'action2.php',
+  'dataType':'json',
+  'columns':{
+   'identifier' : [0, "Track_ID"],
+   'editable':[[7, "Note"]]
+  },
+  onDraw: function() {
+        $('table tr td:nth-child(4) input').each(function() { $(this).datepicker({ dateFormat: 'yy-mm-dd', todayHighlight: true, autoclose: true }); });
+    },
+
+  restoreButton:false,
+  onSuccess:function(data, textStatus, jqXHR)
+  {
+   if(data.action == 'edit')
+   {
+    $('#empTable').DataTable().ajax.reload();
+   }
   }
-}
+ });
+});
 
-function myFunction2() {
-  var x = document.getElementById("myDIV2");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
+      // Search button
+      $('#btn_search').click(function(){
+         dataTable.draw();
+      });
 
-function myFunction3() {
-  var x = document.getElementById("myDIV3");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
+    });
 
-function myFunctionSet1() {
-  var x = document.getElementById("myDIVset1");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
-function myFunctionSet2() {
-  var x = document.getElementById("myDIVset2");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
-function myFunctionSet3() {
-  var x = document.getElementById("myDIVset3");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
 
-</script>
+        </script>
+        </div>
 
-</body>
-<footer class="w3-container" style='background-color:#f2552c'>
-  <h6></h6>
-<a href="#top"><img src="../FBlogo.png" width="150" height="25"/>
-	<p></p></a>
-		<a href="reset-password2.php" class="btn btn-warning w3-button">Reset Password</a>
-		<a href="attendance.php" class="btn btn-warning w3-button">Clock In</a>
-        <a href="logout.php" class="btn btn-danger ml-3 w3-button">Sign Out</a>
+<br><br>
+<footer class="w3-container" style='background-color:#f2552c'><p></p>
+	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
+	<br>
+	<a href="attendance.php" class="ui primary button">Clock In</a>
+	<a href="reset-password2.php" class="ui primary button">Change Password</a>
+	<a href="dashboard.php" class="ui primary button">Dashboard</a>
 </footer>
 
-</html>
+   </html>

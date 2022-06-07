@@ -70,7 +70,7 @@ input, label {
 
   $id = $_GET['id']; // get id through query string
 
-  $qry = mysqli_query($conn,"select EmployeeNo, FirstName, MiddleName, LastName, Department, Username from tb_user where User_ID='$id'"); // select query
+  $qry = mysqli_query($conn,"select EmployeeNo, FirstName, MiddleName, LastName, Department, Username, Usertype, Note from tb_user where User_ID='$id'"); // select query
 
   $data = mysqli_fetch_array($qry); // fetch data
 
@@ -82,8 +82,9 @@ input, label {
   	$LastName = $_POST['LastName'];
   	$Department = $_POST['Department'];
     $Username = $_POST['Username'];
+    $Usertype = $_POST['Usertype'];
 
-    $edit = "update tb_user set EmployeeNo='$EmployeeNo', FirstName='$FirstName', MiddleName='$MiddleName', LastName='$LastName', Department='$Department', Username='$Username' where User_ID='$id'";
+    $edit = "update tb_user set EmployeeNo='$EmployeeNo', FirstName='$FirstName', MiddleName='$MiddleName', LastName='$LastName', Department='$Department', Username='$Username', Usertype='$Usertype' where User_ID='$id'";
   	$resultedit = mysqli_query($conn, $edit);
 
 
@@ -149,11 +150,22 @@ input, label {
       <label for="Username">Username</label>
       <input id="Username" type="text" value="<?php echo $data['Username'] ?>" name="Username" Required>
   </div>
+  <div style="float:left;">
+      <label for="Usertype">Usertype</label>
+
+      <select id="Usertype" name="Usertype" Required>
+        <option value="<?php echo $data['Usertype'] ?>"><?php echo $data['Usertype'] ?></option>
+        <option value="admin">admin</option>
+        <option value="user">user</option>
+        <option value="head">head</option>
+      </select>
+
+  </div>
 
   <div class='w3-container'>
     <p></p>
     <input type="submit" name="update" value="UPDATE" class="ui green button submit">
-    <a href="ADMINDashboard.php" class="ui blue button submit">BACK</a>
+    <a href="Masterlist.php" class="ui blue button submit">BACK</a>
   </div>
 </form>
 

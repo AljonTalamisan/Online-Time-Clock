@@ -70,7 +70,7 @@ h1
 }
 </style>
 <title>Fullybooked Online Time Clock</title>
-<body class="w3-theme-l2">
+<body>
 <script src="hhttps://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
 
 
@@ -84,10 +84,6 @@ h1
 	</div>
 
 	<p></p>
-
-	<div class="w3-container content">
-	<h2 class="w3-center w3-padding w3-red w3-opacity-min">Clock In / Clock Out</h2>
-	</div>
 
 	<div class="w3-container content">
 	<h2 class="w3-center" id="date" name="date"></h2>
@@ -159,7 +155,7 @@ echo '<input name="time" type="hidden" value= "' . $dm . '">';
 	<p></p>
 
 	<p><label><b>Employee Name: </b><b class="w3-text-red">*</b></label></p>
-		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required placeholder="Employee Name" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username']) ?>"><br>
+		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required readonly placeholder="Employee Name" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username']) ?>"><br>
 
 	<input class="ui green button submit" name="submit2" type="submit" value="Clock In" id="submit2">
 	<input class="ui red button submit" name="submit3" type="submit" value="Clock Out" id="submit3">
@@ -361,9 +357,10 @@ function myFunction() {
 <p></p>
 <footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-	<a href="reset-password3.php" class="btn btn-warning w3-button">Reset Password</a>
-	<a href="DEPTdashboard.php" class="btn btn-warning w3-button">Dashboard</a>
-	<a href="RegularRegister3.php" class="btn btn-warning w3-button">Register Regular User</a>
+  <br>
+  <a href="reset-password3.php" class="ui primary button">Reset Password</a>
+	<a href="DEPTattendance.php" class="ui primary button">Clock In</a>
+	<a href="DEPTdashboard.php" class="ui primary button">Dashboard</a>
 </footer>
 </body>
 </html>
