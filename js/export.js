@@ -1,10 +1,10 @@
 $( document ).ready(function() {
 	$(".dataExport").click(function() {
-		var exportType = $(this).data('type');		
+		var exportType = $(this).data('type');
 		$('#dataTable').tableExport({
-			type : exportType,			
+			type : exportType,
 			escape : 'false',
 			ignoreColumn: []
-		});		
+		});
 	});
 });

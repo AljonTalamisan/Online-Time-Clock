@@ -83,15 +83,15 @@ if( isset($_POST['login_btn'])){  // someone click login btn
     }
 
     // Check if password is empty
-    if(empty(trim($_POST["password"]))){
+    if(empty(trim($_POST["Password"]))){
         $password_err = "Please enter your password.";
     } else{
-        $password = trim($_POST["password"]);
+        $password = trim($_POST["Password"]);
     }
 
     $username = $_POST['username'];
     //clean is the custom function to remove all harmful code
-    $password = $_POST['password'];
+    $password = $_POST['Password'];
 
 
     // run query to get db username & password i am using prepare stmt for more secure , you can use mysqli_fetch_array , but need to implement mysql_real_escape_string for sql injection
@@ -155,6 +155,14 @@ if( isset($_POST['login_btn'])){  // someone click login btn
     $_SESSION['LastName'] = $lastname;
     $_SESSION['EmployeeNo'] = $employee_no;
 
+    if(!empty($_POST["remember"])) {
+    				setcookie ("member_login",$_POST["username"],time()+ (10 * 365 * 24 * 60 * 60));
+            setcookie ("member_password",$_POST["Password"],time()+ (10 * 365 * 24 * 60 * 60));
+    			} else {
+    				if(isset($_COOKIE["member_login"])) {
+    					setcookie ("member_login","");
+    				}
+    			}
     // first method ->    header('Location: portal.php');
     // you can now direct to portal page{1st method } where all admin or normal user can view
     // or you can now do separate redirection (2nd method below )
@@ -203,16 +211,20 @@ icon: "error",
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
             <div class="form-group">
                 <label>Username</label>
-                <input type="text" name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $username; ?>">
+                <input type="text" name="username" class="form-control <?php echo (!empty($username_err)) ? 'is-invalid' : ''; ?>" value="<?php if(isset($_COOKIE["member_login"])) { echo $_COOKIE["member_login"]; } ?>">
                 <span class="invalid-feedback"><?php echo $username_err; ?></span>
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>">
+                <input type="password" name="Password" class="form-control <?php echo (!empty($password_err)) ? 'is-invalid' : ''; ?>" value="<?php if(isset($_COOKIE["member_password"])) { echo $_COOKIE["member_password"]; } ?>">
                 <span class="invalid-feedback"><?php echo $password_err; ?></span>
             </div>
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Login" name="login_btn">
+            </div>
+            <div class="field-group">
+              <input type="checkbox" name="remember" id="remember" <?php if(isset($_COOKIE["member_login"])) { ?> checked <?php } ?> />
+                <label for="remember-me">Remember me</label>
             </div>
         </form>
     </div>

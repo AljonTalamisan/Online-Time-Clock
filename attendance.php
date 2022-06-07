@@ -73,8 +73,8 @@ h1
 }
 </style>
 <title>Fullybooked Online Time Clock</title>
-<body class="w3-theme-l2">
-<script src="hhttps://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
 
 
 <!----------------------------------------------------- Header Design -------------------------------------------------------------------------------->
@@ -88,9 +88,6 @@ h1
 
 	<p></p>
 
-	<div class="w3-container content">
-	<h2 class="w3-center w3-padding w3-red w3-opacity-min">Clock In / Clock Out</h2>
-	</div>
 
 	<div class="w3-container content">
 	<h2 class="w3-center" id="date" name="date"></h2>
@@ -165,14 +162,16 @@ echo '<input name="time" type="hidden" value= "' . $dm . '">';
 	<p></p>
 
 	<p><label><b>Employee's Username: </b><b class="w3-text-red">*</b></label></p>
-		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required placeholder="Employee's Username" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username'])?>"><br>
+		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required readonly placeholder="Employee's Username" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username'])?>"><br>
 
 	<input class="ui green button submit" name="submit2" type="submit" value="Clock In" id="submit2">
 	<input class="ui red button submit" name="submit3" type="submit" value="Clock Out" id="submit3">
 </form>
 </div>
-	<br><br><br><br>
-<p></p>
+
+	<br><br><br><br><br><br><br><br>
+
+
 
 <!----------------------------------------------------- PHP CODE For Employee's Clock In -------------------------------------------------------------------------------->
 
@@ -315,7 +314,46 @@ icon: "error",
 
 ?>
 
+<!----------------------------------------------------- PHP CODE For Employee's Note-------------------------------------------------------------------------------->
 
+<?php
+
+if(isset($_POST['submit4'])){ // Fetching variables of the form which travels in URL
+$date3 = mysqli_real_escape_string($conn, $_POST['date3']);
+$note = mysqli_real_escape_string($conn, $_POST['note']);
+$companyname3 = mysqli_real_escape_string($conn, $_POST['company_list2']);
+$employeename3 = mysqli_real_escape_string($conn, $_POST['employee_name2']);
+$date3 = date('Y-m-d');
+$time3 = date('H:i');
+
+$sql3 = "insert into tb_user_track(Department, Username, Date, Note) values ('$companyname3', '$employeename3', '$date3', '$note')";
+
+
+if (mysqli_query($conn, $sql3))
+{
+?>
+	<script>
+swal({
+title: "SUCCESS",
+text: "Employee Successfully Submitted a Note!",
+icon: "success"
+}).then(function(){
+   location.reload();
+   }
+);
+	</script>
+
+<?php
+}
+
+else
+{
+  echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+}
+}
+
+
+?>
 
 	<!----------------------------------------------------- PHP CODE For Employee's Name Registration -------------------------------------------------------------------------------->
 
@@ -368,9 +406,10 @@ function myFunction() {
 
 <footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-	<a href="reset-password2.php" class="btn btn-warning w3-button">Change Password</a>
-	<a href="dashboard.php" class="btn btn-warning w3-button">Dashboard</a>
-	<a href="logout.php" class="btn btn-warning w3-button">Sign Out</a>
+  <br>
+  <a href="attendance.php" class="ui primary button">Clock In</a>
+	<a href="reset-password2.php" class="ui primary button">Change Password</a>
+	<a href="dashboard.php" class="ui primary button">Dashboard</a>
 </footer>
 </body>
 </html>

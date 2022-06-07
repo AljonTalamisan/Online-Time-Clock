@@ -136,6 +136,7 @@ h1
 	<div class="w3-container w3-2019-orange-tiger content" style='background-color:#f2552c' id="top">
 		<img src="../FBlogo.png" width="100" height="50" class="center" />
 		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
+    <a href="ADMINlogout.php" class="ui primary button w3-right">Sign Out</a>
 	</div>
 
 	<p></p>
@@ -161,8 +162,16 @@ h1
         </form>
     </div>
 
-	<footer class="w3-container" style='background-color:#f2552c'><p></p>
-	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-	</footer>
+    <footer class="w3-container" style='background-color:#f2552c'>
+      <h6></h6>
+    <a href="#top"><img src="../FBlogo.png" width="150" height="25"/>
+    	<p></p></a>
+      <br>
+      <a href="reset-password.php" class="ui primary button">Change Password</a>
+      <a href="ADMINattendance.php" class="ui primary button">Clock In</a>
+    	<a href="ADMINdashboard.php" class="ui primary button">Dashboard</a>
+    	<a href="ADMINregister2.php" class="ui primary button">Add User</a>
+      <a href="Masterlist.php" class="ui primary button">Masterlist</a>
+    </footer>
 </body>
 </html>

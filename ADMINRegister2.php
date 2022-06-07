@@ -105,6 +105,13 @@ if(empty(trim($_POST["employee_number"]))){
   $employee_number = trim($_POST["employee_number"]);
 }
 
+// Validate usertype
+if(empty(trim($_POST["usertype"]))){
+  $usertype_err = "Please select a Usertype.";
+} else{
+  $usertype = trim($_POST["usertype"]);
+}
+
     // Check input errors before inserting in database
     if(empty($username_err) && empty($password_err) && empty($confirm_password_err)){
 
@@ -148,6 +155,7 @@ if(empty(trim($_POST["employee_number"]))){
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sign Up</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 	<link rel="stylesheet" href="w3.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
 	<script src="jquery-3.5.1.min.js"></script>
@@ -214,7 +222,7 @@ h1
 	<p></p>
 
     <div class="wrapper w3-container content">
-        <h2>Sign Up (Admin Account)</h2>
+        <h2>Add User</h2>
         <p>Please fill this form to create an account.</p>
         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 			<?php
@@ -240,6 +248,17 @@ h1
 				</datalist>
 			<p></p>
 			</div>
+      <div class="form-group">
+          <label>Usertype</label>
+
+          <select class="w3-select w3-border" id="usertype" name="usertype" Required>
+            <option value="admin">admin</option>
+            <option value="user">user</option>
+            <option value="head">head</option>
+          </select>
+          <span class="invalid-feedback"><?php echo $usertype_err; ?></span>
+
+      </div>
       <div class="form-group">
           <label>Employee Number</label>
           <input type="text" required name="employee_number" class="form-control <?php echo (!empty($employee_number_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $employee_number; ?>">
@@ -275,27 +294,24 @@ h1
                 <input type="password" required name="confirm_password" class="form-control <?php echo (!empty($confirm_password_err)) ? 'is-invalid' : ''; ?>" value="<?php echo $confirm_password; ?>">
                 <span class="invalid-feedback"><?php echo $confirm_password_err; ?></span>
             </div>
-		 	<div class="form-group">
-                <input type="hidden" required name="usertype" class="form-control <?php echo (!empty($usertype_err_err)) ? 'is-invalid' : ''; ?>" value="admin">
-                <span class="invalid-feedback"><?php echo $usertype_err; ?></span>
-            </div>
+
             <div class="form-group">
                 <input type="submit" class="btn btn-primary" value="Submit">
             </div>
 
         </form>
+        <br><br><br><br><br><br><br><br>
     </div>
 <br>  <br>   <br>   <br>   <br>
 
 <footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
-        <a href="reset-password.php" class="btn btn-warning w3-button">Change Password</a>
-		<a href="ADMINdashboard.php" class="btn btn-warning w3-button">Dashboard</a>
-		<a href="ADMINattendance.php" class="btn btn-warning w3-button">Clock In</a>
-		<a href="RegularRegister2.php" class="btn btn-warning w3-button">Create Regular Account</a>
-    <a href="DEPTregister.php" class="btn btn-warning w3-button">Create Dept Head Account</a>
-    <a href="Masterlist.php" class="btn btn-warning w3-button">Masterlist</a>
-
+  <br>
+  <a href="reset-password.php" class="ui primary button">Change Password</a>
+  <a href="ADMINattendance.php" class="ui primary button">Clock In</a>
+	<a href="ADMINdashboard.php" class="ui primary button">Dashboard</a>
+	<a href="ADMINregister2.php" class="ui primary button">Add User</a>
+  <a href="Masterlist.php" class="ui primary button">Masterlist</a>
 </footer>
 </body>
 </html>
