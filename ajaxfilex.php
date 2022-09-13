@@ -1,11 +1,4 @@
 <?php
-session_start();
-
-if(!isset($_SESSION["Department"]))
-{
-	header("location:index.php");
-}
-
 include 'db_con.php';
 $con = OpenCon();
 
@@ -25,7 +18,7 @@ $searchByTodate = mysqli_real_escape_string($con,$_POST['searchByTodate']);
 ## Search
 $searchQuery = " ";
 if($searchValue != ''){
-    $searchQuery = " and (Track_ID like '%".$searchValue."%' or FullName like '%".$searchValue."%') ";
+    $searchQuery = " and (Track_ID like '%".$searchValue."%' or Username like '%".$searchValue."%' or Department like'%".$searchValue."%' ) ";
 }
 
 // Date filter
@@ -44,22 +37,21 @@ $records2 = mysqli_fetch_assoc($sel2);
 $totalRecordwithFilter = $records2['allcount'];
 
 ## Fetch records
-$empQuery = "SELECT Track_ID, FullName, Department, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours, Late_EarlyHours, Approval, Note from tb_user_track
- WHERE 1 ".$searchQuery." AND Department='".$_SESSION['Department']."' order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+$empQuery = "SELECT Track_ID, Username, Department, Date, DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,  DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out, DATE_FORMAT(Hours,'%H:%i') as Hours, Late_EarlyHours, Note from tb_user_track
+ WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($con, $empQuery);
 $data = array();
 
 while ($row = mysqli_fetch_assoc($empRecords)) {
     $data[] = array(
       "Track_ID"=>$row['Track_ID'],
-      "FullName"=>$row['FullName'],
+      "Username"=>$row['Username'],
       "Department"=>$row['Department'],
       "Date"=>$row['Date'],
       "Time_In"=>$row['Time_In'],
       "Time_Out"=>$row['Time_Out'],
       "Hours"=>$row['Hours'],
-			"Late_EarlyHours"=>$row['Late_EarlyHours'],
-			"Approval"=>$row['Approval'],
+      "Late_EarlyHours"=>$row['Late_EarlyHours'],
       "Note"=>$row['Note']
     );
 }

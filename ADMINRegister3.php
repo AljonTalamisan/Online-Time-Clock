@@ -138,7 +138,7 @@ if(empty(trim($_POST["shiftschedule"]))){
       $param_fullname = $fullname;
       $param_lastname = $lastname;
             $param_username = $username;
-            $param_password = password_hash($password, PASSWORD_DEFAULT); // Creates a password hash
+            $param_password = $password; // Creates a password
 
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){

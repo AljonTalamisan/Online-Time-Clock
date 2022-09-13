@@ -13,12 +13,15 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 <link rel="stylesheet" href="w3.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
 <script src="jquery-3.5.1.min.js"></script>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<!--<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>-->
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="sweetalert2.all.min.js"></script>
 <script>
     if ( window.history.replaceState ) {
         window.history.replaceState( null, null, window.location.href );
     }
 </script>
+
 <!--- Responsive ---->
 <meta name="viewport" content="width=device-width, initial-scale=1">
  <style>
@@ -71,25 +74,25 @@ h1
 </style>
 <title>Fullybooked Online Time Clock</title>
 <body>
-<script src="hhttps://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
 
 
 <!----------------------------------------------------- Header Design -------------------------------------------------------------------------------->
 
 	<div class="w3-container w3-2019-orange-tiger content" style='background-color:#f2552c' id="top">
 		<img src="../FBlogo.png" width="100" height="50" class="center" />
-		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock (ADMIN)</h2>
+		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
     <a href="ADMINlogout.php" class="ui primary button w3-right">Sign Out</a>
-    <h5 class="w3-left"> Welcome <i><?php echo htmlspecialchars($_SESSION['Username']) ?></i> </h5>
+    <h5 class="w3-left"> Welcome <i><?php echo htmlspecialchars($_SESSION['FirstName']) . ' ' . htmlspecialchars($_SESSION['LastName']) ?></i> </h5>
 	</div>
 
 	<p></p>
 
+
 	<div class="w3-container content">
 	<h2 class="w3-center" id="date" name="date"></h2>
 	<h2 class="w3-center" id="time" name="time"></h2>
-  </div>
-  <p></p>
+   	</div>
 
 <!----------------------------------------------------- Form for Registering Employees on a specific Company -------------------------------------------------------------------------------->
 
@@ -106,11 +109,12 @@ $dt=date('Y-m-d');
 $dm=date('H:i');
 
 $username=$_SESSION['Username'];
+$fullname=$_SESSION['FullName'];
 
 $set = "SELECT Comp_Name from tb_comp_name"; //
 $resultset = mysqli_query($conn, $set);
 
-$latest = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Track_ID = (SELECT Max(Track_ID) from tb_user_track) and Username = '$username'";
+$latest = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where FullName = '$fullname' ORDER BY Track_ID DESC LIMIT 1";
 $latestset = mysqli_query($conn, $latest);
 
 	while($rowlatest = mysqli_fetch_assoc($latestset)) {
@@ -127,7 +131,7 @@ $latestset = mysqli_query($conn, $latest);
 	?>
 <?php
 
-$latest2 = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Date = CURDATE() and Username = '$username'";
+$latest2 = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Date = CURDATE() and FullName = '$fullname'";
 $latestset2 = mysqli_query($conn, $latest2);
 
 	while($rowlatest2 = mysqli_fetch_assoc($latestset2)) {
@@ -141,6 +145,9 @@ $latestset2 = mysqli_query($conn, $latest2);
 
 	?>
 
+
+
+
 <div class="ui inverted container segment text"><br>
 <form name="Employee Form" class="w3-container" method="post">
 
@@ -148,22 +155,22 @@ $latestset2 = mysqli_query($conn, $latest2);
 echo '<input name="date" type="hidden" value= "' . $dt . '">';
 echo '<input name="time" type="hidden" value= "' . $dm . '">';
 ?>
-<h2>CLOCK IN/CLOCK OUT</h2>
-	<p><label><b>Department: </b></label></p>
 
-	<input type=text name="company_list" class="w3-input w3-border w3-round-large" readonly required placeholder="Company Name" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Department']) ?>"><br>
+	<p><label><b>Department </b><b class="w3-text-red">*</b></label></p>
+
+	<input type=text name="company_list" class="w3-input w3-border w3-round-large" readonly required placeholder="Department" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Department']) ?>"><br>
 	<p></p>
 
-	<p><label><b>Employee Name: </b></label></p>
-		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required readonly placeholder="Employee Name" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username']) ?>"><br>
+	<p><label><b>Employee's Name: </b><b class="w3-text-red">*</b></label></p>
+		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required readonly placeholder="Employee's Username" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['FullName'])?>"><br>
 
 	<input class="ui green button submit" name="submit2" type="submit" value="Clock In" id="submit2">
 	<input class="ui red button submit" name="submit3" type="submit" value="Clock Out" id="submit3">
 </form>
 </div>
-<br><br>
 
 	<br><br><br><br><br><br><br><br>
+
 
 
 <!----------------------------------------------------- PHP CODE For Employee's Clock In -------------------------------------------------------------------------------->
@@ -178,19 +185,19 @@ $date = date('Y-m-d');
 $time = date('H:i');
 
 //check if the employee had already clocked in today
-$sqlcheckemployee = "SELECT Department, Username, Date, Action FROM tb_user_track WHERE Date = '$date' AND Username = '$employeename' AND Action = 'IN'";
+$sqlcheckemployee = "SELECT Department, FullName, Date, Action FROM tb_user_track WHERE Date = '$date' AND FullName = '$employeename' AND Action = 'IN'";
 $result = mysqli_query($conn, $sqlcheckemployee);
 
 
 //check if the name is already been registered on database
-$sqlcheckemployee2 = "SELECT Department, Username FROM tb_user WHERE Department = '$companyname' AND Username = '$employeename'";
+$sqlcheckemployee2 = "SELECT Department, FullName FROM tb_user WHERE Department = '$companyname' AND FullName = '$employeename'";
 $result2 = mysqli_query($conn, $sqlcheckemployee2);
 
 if (mysqli_num_rows($result) > 0) {
 
 ?>
 	<script> //popup message had already clocked in
-swal({
+swal.fire({
 text: "This Employee had already Clocked In!",
 icon: "error",
 });
@@ -205,7 +212,7 @@ else if (mysqli_num_rows($result2) == 0) {
 
 	?>
 	<script> //popup message employee not yet registered
-swal({
+swal.fire({
 text: "This Employee is not yet Registered!",
 icon: "error",
 });
@@ -216,24 +223,27 @@ icon: "error",
 
 else
 {
-$sql = "insert into tb_user_track(Department, Username, Date, Time_In, Action) values ('$companyname', '$employeename', '$date', '$time', 'IN')";
-
+$sql = "insert into tb_user_track(Department, Fullname, Date, Time_In, Action) values ('$companyname', '$employeename', '$date', '$time', 'IN')";
+$lateearly = "UPDATE tb_user_track t1 JOIN tb_user t2 ON t2.FullName = t1.FullName SET t1.Late_EarlyHours = TIMEDIFF(t2.ShiftSchedule, Time_In) WHERE t1.Date = '$date' AND t1.FullName = '$employeename'";
 
 if (mysqli_query($conn, $sql))
 {
+  if (mysqli_query($conn, $lateearly)){
 ?>
 	<script>
-swal({
+swal.fire({
 title: "SUCCESS",
 text: "Employee Successfully Clocked In!",
 icon: "success"
 }).then(function(){
    location.reload();
    }
+
 );
 	</script>
 
 <?php
+}
 }
 
 else
@@ -258,20 +268,20 @@ $date2 = date('Y-m-d');
 $time2 = date('H:i');
 
 //check if the employee had already clocked in today
-$sqlout = "SELECT Department, Username, Date, Action, Time_Out FROM tb_user_track WHERE Date = '$date2' AND Username = '$employeename2' AND Action = 'IN'";
+$sqlout = "SELECT Department, FullName, Date, Action, Time_Out FROM tb_user_track WHERE Date = '$date2' AND FullName = '$employeename2' AND Action = 'IN'";
 $result = mysqli_query($conn, $sqlout);
 
 if (mysqli_num_rows($result) > 0) {
 
-$sql = "UPDATE tb_user_track SET Time_Out= '$time2', Action = 'OUT' WHERE Date = '$date2' AND Username = '$employeename2' AND ACTION = 'IN'";
-$sqlcalculate  = "UPDATE tb_user_track SET Hours = TIMEDIFF(Time_Out, Time_In) WHERE Date = '$date2' AND Username = '$employeename2' AND ACTION = 'OUT'";
+$sql = "UPDATE tb_user_track SET Time_Out= '$time2', Action = 'OUT' WHERE Date = '$date2' AND FullName = '$employeename2' AND ACTION = 'IN'";
+$sqlcalculate  = "UPDATE tb_user_track SET Hours = TIMEDIFF(Time_Out, Time_In) WHERE Date = '$date2' AND FullName = '$employeename2' AND ACTION = 'OUT'";
 
 if (mysqli_query($conn, $sql))
 {
 	if(mysqli_query($conn, $sqlcalculate)){
 ?>
 	<script>
-swal({
+swal.fire({
 title: "SUCCESS",
 text: "Employee Successfully Clocked Out!",
 icon: "success"
@@ -290,7 +300,7 @@ else {
 
 ?>
 	<script> //popup message had already clocked in
-swal({
+swal.fire({
 text: "This Employee had already Clocked Out!",
 icon: "error",
 });
@@ -306,6 +316,7 @@ icon: "error",
 
 
 ?>
+
 <!----------------------------------------------------- PHP CODE For Employee's Note-------------------------------------------------------------------------------->
 
 <?php
@@ -318,7 +329,7 @@ $employeename3 = mysqli_real_escape_string($conn, $_POST['employee_name2']);
 $date3 = date('Y-m-d');
 $time3 = date('H:i');
 
-$sql3 = "insert into tb_user_track(Department, Username, Date, Note) values ('$companyname3', '$employeename3', '$date3', '$note')";
+$sql3 = "insert into tb_user_track(Department, FullName, Date, Note) values ('$companyname3', '$employeename3', '$date3', '$note')";
 
 
 if (mysqli_query($conn, $sql3))
@@ -346,7 +357,6 @@ else
 
 
 ?>
-
 
 	<!----------------------------------------------------- PHP CODE For Employee's Name Registration -------------------------------------------------------------------------------->
 
@@ -404,6 +414,8 @@ function myFunction() {
 	<a href="ADMINdashboard.php" class="ui primary button">Dashboard</a>
 	<a href="ADMINregister2.php" class="ui primary button">Add User</a>
   <a href="Masterlist.php" class="ui primary button">Masterlist</a>
+  <a href="schedule.php" class="ui primary button">Schedule</a>
 </footer>
 </body>
+</html>
 </html>

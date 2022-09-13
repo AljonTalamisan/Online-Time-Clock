@@ -25,7 +25,7 @@ $searchValue = mysqli_real_escape_string($con,$_POST['search']['value']); // Sea
 ## Search
 $searchQuery = " ";
 if($searchValue != ''){
-    $searchQuery = " and (User_ID like '%".$searchValue."%' or Username like '%".$searchValue."%' or Department like '%".$searchValue."%' or FirstName like '%".$searchValue."%' or FullName like '%".$searchValue."%' or LastName like '%".$searchValue."%' or Usertype like '%".$searchValue. "%'or EmployeeNo like '%".$searchValue."%') ";
+    $searchQuery = " and (User_ID like '%".$searchValue."%' or Department like '%".$searchValue."%' or FullName like '%".$searchValue."%') ";
 }
 
 // // Date filter
@@ -44,7 +44,7 @@ $records2 = mysqli_fetch_assoc($sel2);
 $totalRecordwithFilter = $records2['allcount'];
 
 ## Fetch records
-$empQuery = "SELECT User_ID, EmployeeNo, FirstName, FullName, LastName, Department, Username, Password, Usertype, Status from tb_user
+$empQuery = "SELECT User_ID, EmployeeNo, FullName, Department, ShiftSchedule from tb_user
  WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $empRecords = mysqli_query($con, $empQuery);
 $data = array();
@@ -54,13 +54,8 @@ while ($row = mysqli_fetch_assoc($empRecords)) {
       "User_ID"=>$row['User_ID'],
       "EmployeeNo"=>$row['EmployeeNo'],
 			"FullName"=>$row['FullName'],
-      "FirstName"=>$row['FirstName'],
-      "LastName"=>$row['LastName'],
       "Department"=>$row['Department'],
-      "Username"=>$row['Username'],
-			"Password"=>$row['Password'],
-			"Usertype"=>$row['Usertype'],
-			"Status"=>$row['Status'],
+			"ShiftSchedule"=>$row['ShiftSchedule'],
     );
 }
 

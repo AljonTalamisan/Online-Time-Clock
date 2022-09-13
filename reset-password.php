@@ -172,6 +172,7 @@ h1
     	<a href="ADMINdashboard.php" class="ui primary button">Dashboard</a>
     	<a href="ADMINregister2.php" class="ui primary button">Add User</a>
       <a href="Masterlist.php" class="ui primary button">Masterlist</a>
+      <a href="schedule.php" class="ui primary button">Schedule</a>
     </footer>
 </body>
 </html>

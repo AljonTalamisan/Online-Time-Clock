@@ -94,10 +94,10 @@ footer {
               <table>
                 <tr>
                   <td>
-                    <input type='text' readonly id='search_fromdate' class="datepicker form-control" placeholder='From'>
+                    <input type='text'  id='search_fromdate' class="datepicker form-control" placeholder='From'>
                   </td>
                   <td>
-                    <input type='text' readonly id='search_todate' class="datepicker form-control" placeholder='To'>
+                    <input type='text'  id='search_todate' class="datepicker form-control" placeholder='To'>
                   </td>
                   <td>
                     <input type='button' id="btn_search" value="Search" class="btn btn-info">
@@ -123,12 +123,14 @@ footer {
 
                     <tr>
                       <th>#</th>
-                      <th>USERNAME</th>
+                      <th>FULLNAME</th>
                       <th>DEPARTMENT</th>
                       <th>DATE</th>
                       <th>TIME IN</th>
                       <th>TIME OUT</th>
                       <th>HOURS</th>
+											<th>EXCESS</th>
+											<th>APPROVAL</th>
                       <th>NOTE</th>
                     </tr>
 
@@ -191,12 +193,14 @@ footer {
          },
          'columns': [
             { data: 'Track_ID' },
-            { data: 'Username' },
+            { data: 'FullName' },
             { data: 'Department' },
             { data: 'Date' },
             { data: 'Time_In' },
             { data: 'Time_Out' },
             { data: 'Hours' },
+						{ data: 'Late_EarlyHours' },
+						{ data: 'Approval' },
             { data: 'Note' },
          ]
       });
@@ -206,7 +210,7 @@ footer {
   'dataType':'json',
   'columns':{
    'identifier' : [0, "Track_ID"],
-   'editable':[[1, "Username"], [2, "Department"], [3, "Date"], [4, "Time_In"], [5, "Time_Out"], [6, "Hours"], [7, "Note"]]
+   'editable':[[4, "Time_In", ], [5, "Time_Out"], [9, "Note"]]
  },
 // Set Datepicker when Editing the date
   onDraw: function() {
@@ -263,5 +267,6 @@ footer {
 					<a href="ADMINdashboard.php" class="ui primary button">Dashboard</a>
 					<a href="ADMINregister2.php" class="ui primary button">Add User</a>
 				  <a href="Masterlist.php" class="ui primary button">Masterlist</a>
+					<a href="schedule.php" class="ui primary button">Schedule</a>
 				</footer>
    </html>

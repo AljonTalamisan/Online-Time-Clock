@@ -88,8 +88,8 @@ footer {
 
   <div class="card container" style='background-color:#f2552c' id="top">
     <img src="../FBlogo.png" class="img-fluid rounded mx-auto d-block" alt="...">
-		<h2 class="h2 text-center text-light">Fully Booked Online Time Clock</h2>
-		<h5 class="w3-left w3-text-white"> Welcome <i><?php echo htmlspecialchars($_SESSION['Username']) ?></i> </h5>
+	<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
+		<h5 class="w3-left w3-text-white"> Welcome <i><?php echo htmlspecialchars($_SESSION['FullName']) ?></i> </h5>
 	</div>
 
 
@@ -106,10 +106,10 @@ footer {
 	<table>
 	<tr>
 		<td>
-			 <input type='text' readonly id='search_fromdate' class="datepicker form-control" placeholder='From'>
+			 <input type='text'id='search_fromdate' class="datepicker form-control" placeholder='From'>
 		</td>
 		<td>
-			 <input type='text' readonly id='search_todate' class="datepicker form-control" placeholder='To'>
+			 <input type='text' id='search_todate' class="datepicker form-control" placeholder='To'>
 		</td>
 		<td>
 			 <input type='button' id="btn_search" value="Search" class="btn btn-info">
@@ -131,14 +131,16 @@ footer {
                  <thead>
 
                         <tr>
-                        <th>#</th>
-                        <th>USERNAME</th>
-                        <th>DEPARTMENT</th>
-                        <th>DATE</th>
-                        <th>TIME IN</th>
-                        <th>TIME OUT</th>
-                        <th>HOURS</th>
-                        <th>NOTE</th>
+													<th>#</th>
+		                      <th>FULLNAME</th>
+		                      <th>DEPARTMENT</th>
+		                      <th>DATE</th>
+		                      <th>TIME IN</th>
+		                      <th>TIME OUT</th>
+		                      <th>HOURS</th>
+													<th>EXCESS</th>
+													<th>APPROVAL</th>
+		                      <th>NOTE</th>
 
                         </tr>
 
@@ -168,6 +170,10 @@ footer {
          'serverSide': true,
          'serverMethod': 'post',
          'searching': true,
+				 lengthMenu: [
+						 [10, 50, 100, 150, 200, 500, 1000, -1],
+						 [10, 50, 100, 150, 200, 500, 1000],
+				 ],
          dom: 'Blfrtip',
 				 buttons: [
           {
@@ -206,12 +212,14 @@ footer {
          },
          'columns': [
             { data: 'Track_ID' },
-            { data: 'Username' },
+            { data: 'FullName' },
             { data: 'Department' },
             { data: 'Date' },
             { data: 'Time_In' },
             { data: 'Time_Out' },
             { data: 'Hours' },
+						{ data: 'Late_EarlyHours' },
+						{ data: 'Approval' },
             { data: 'Note' },
          ]
       });
@@ -219,9 +227,10 @@ footer {
  $('#empTable').Tabledit({
   'url':'action2.php',
   'dataType':'json',
+	deleteButton: false,
   'columns':{
    'identifier' : [0, "Track_ID"],
-   'editable':[[7, "Note"]]
+   'editable':[[9, "Note"]]
   },
   onDraw: function() {
         $('table tr td:nth-child(4) input').each(function() { $(this).datepicker({ dateFormat: 'yy-mm-dd', todayHighlight: true, autoclose: true }); });

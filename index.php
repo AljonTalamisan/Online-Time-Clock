@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+  <!--character encoding (UTF-8 covers amost all characters and symbols) -->
+  <meta charset="UTF-8">
+  <!-- responsive -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>Login</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="w3.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
 	<script src="jquery-3.5.1.min.js"></script>
@@ -13,7 +16,7 @@
         body{ font: 14px sans-serif; }
         .wrapper{ width: 360px; padding: 20px; }
 
-		.content {
+.content {
   max-width: 800px;
   margin: auto;
   padding: 10px;
@@ -58,10 +61,14 @@ h1
 }
 
     </style>
+    <!-- for PWA -->
+    <link rel="manifest" href="manifest.json">
+    
 </head>
 
 
 <body>
+
 	<div class="w3-container w3-2019-orange-tiger content" style='background-color:#f2552c' id="top">
 		<img src="../FBlogo.png" width="100" height="50" class="center" />
 		<h2 class="w3-center w3-opacity" style="text-shadow:1px 1px 0 #444">Fully Booked Online Time Clock</h2>
@@ -70,7 +77,7 @@ h1
 
 // Include config file
 require_once "config.php";
-$username = $password = $firstname = $middlename = $lastname = $department = $employee_no ="";
+$username = $password = $firstname = $fullname = $lastname = $department = $employee_no = $usertype = $status = $shiftschedule="";
 $username_err = $password_err = $login_err = "";
 
 if( isset($_POST['login_btn'])){  // someone click login btn
@@ -96,24 +103,26 @@ if( isset($_POST['login_btn'])){  // someone click login btn
 
     // run query to get db username & password i am using prepare stmt for more secure , you can use mysqli_fetch_array , but need to implement mysql_real_escape_string for sql injection
 
-    $stmt = mysqli_prepare($link,"SELECT User_ID,EmployeeNo,Firstname,Middlename,Lastname,Department,Username,Password,Usertype FROM tb_user WHERE Username = ? ");
+    $stmt = mysqli_prepare($link,"SELECT User_ID,EmployeeNo,FirstName,FullName,LastName,Department,Username,Password,Usertype,Status,ShiftSchedule FROM tb_user WHERE Username = ? ");
 
     //$connection is your db connection
     mysqli_stmt_bind_param($stmt, "s", $username);
     mysqli_stmt_execute($stmt);
 
-    mysqli_stmt_bind_result($stmt, $bind_id,$bind_employee_no,$bind_firstname,$bind_middlename,$bind_lastname,$bind_department,$bind_username,$bind_password,$bind_usertype);
+    mysqli_stmt_bind_result($stmt, $bind_id,$bind_employee_no,$bind_firstname,$bind_fullname,$bind_lastname,$bind_department,$bind_username,$bind_password,$bind_usertype,$bind_status,$bind_shiftschedule);
 
     while (mysqli_stmt_fetch($stmt)) {
     $userid = $bind_id;
     $employee_no = $bind_employee_no;
     $firstname = $bind_firstname;
-    $middlename = $bind_middlename;
+    $fullname = $bind_fullname;
     $lastname = $bind_lastname;
     $department = $bind_department;
     $db_username = $bind_username;
     $db_password = $bind_password;
     $usertype = $bind_usertype;
+    $status = $bind_status;
+    $shiftschedule = $bind_shiftschedule;
     }
 
     //  do form validation
@@ -141,7 +150,7 @@ if( isset($_POST['login_btn'])){  // someone click login btn
       </script>
       <?php
     }else{
-    if( password_verify($password, $db_password)){
+    if( $password = $db_password){
   session_start();
     // assuming your using password_hash function to verify , or you can just use simply compare $password == db_password
     // if password_verify return true meaning correct password then save all necessary sessions
@@ -151,9 +160,11 @@ if( isset($_POST['login_btn'])){  // someone click login btn
     $_SESSION['Username'] = $db_username;
     $_SESSION['Usertype'] = $usertype;
     $_SESSION['FirstName'] = $firstname;
-    $_SESSION['MiddleName'] = $middlename;
+    $_SESSION['FullName'] = $fullname;
     $_SESSION['LastName'] = $lastname;
     $_SESSION['EmployeeNo'] = $employee_no;
+    $_SESSION['Status'] = $status;
+    $_SESSION['ShiftSchedule'] = $shiftschedule;
 
     if(!empty($_POST["remember"])) {
     				setcookie ("member_login",$_POST["username"],time()+ (10 * 365 * 24 * 60 * 60));
@@ -232,5 +243,12 @@ icon: "error",
 	<footer class="w3-container" style='background-color:#f2552c'><p></p>
 	<a href="#top"><img src="../FBlogo.png" width="150" height="25"/><p></p></a>
 </footer>
+<script>
+    if ('serviceWorker' in navigator) {
+
+        navigator.serviceWorker.register('/service-worker.js');
+
+    }
+</script>
 </body>
 </html>

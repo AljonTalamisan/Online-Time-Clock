@@ -109,12 +109,12 @@ $dt=date('Y-m-d');
 $dm=date('H:i');
 
 $username=$_SESSION['Username'];
-$firstname=$_SESSION['FirstName'];
+$fullname=$_SESSION['FullName'];
 
 $set = "SELECT Comp_Name from tb_comp_name"; //
 $resultset = mysqli_query($conn, $set);
 
-$latest = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Username = '$username' ORDER BY Track_ID DESC LIMIT 1";
+$latest = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where FullName = '$fullname' ORDER BY Track_ID DESC LIMIT 1";
 $latestset = mysqli_query($conn, $latest);
 
 	while($rowlatest = mysqli_fetch_assoc($latestset)) {
@@ -131,7 +131,7 @@ $latestset = mysqli_query($conn, $latest);
 	?>
 <?php
 
-$latest2 = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Date = CURDATE() and Username = '$username'";
+$latest2 = "SELECT Action,Date,DATE_FORMAT(Time_In,'%h:%i %p') as Time_In,DATE_FORMAT(Time_Out,'%h:%i %p') as Time_Out from tb_user_track where Date = CURDATE() and FullName = '$fullname'";
 $latestset2 = mysqli_query($conn, $latest2);
 
 	while($rowlatest2 = mysqli_fetch_assoc($latestset2)) {
@@ -161,8 +161,8 @@ echo '<input name="time" type="hidden" value= "' . $dm . '">';
 	<input type=text name="company_list" class="w3-input w3-border w3-round-large" readonly required placeholder="Department" id="company_list" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Department']) ?>"><br>
 	<p></p>
 
-	<p><label><b>Employee's Username: </b><b class="w3-text-red">*</b></label></p>
-		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required readonly placeholder="Employee's Username" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['Username'])?>"><br>
+	<p><label><b>Employee's Name: </b><b class="w3-text-red">*</b></label></p>
+		<input type=text name="employee_name" class="w3-input w3-border w3-round-large" required readonly placeholder="Employee's Name" id="employee_name" onblur="myFunction()" value="<?php echo htmlspecialchars($_SESSION['FullName'])?>"><br>
 
 	<input class="ui green button submit" name="submit2" type="submit" value="Clock In" id="submit2">
 	<input class="ui red button submit" name="submit3" type="submit" value="Clock Out" id="submit3">
@@ -185,12 +185,12 @@ $date = date('Y-m-d');
 $time = date('H:i');
 
 //check if the employee had already clocked in today
-$sqlcheckemployee = "SELECT Department, Username, Date, Action FROM tb_user_track WHERE Date = '$date' AND Username = '$employeename' AND Action = 'IN'";
+$sqlcheckemployee = "SELECT Department, FullName, Date, Action FROM tb_user_track WHERE Date = '$date' AND FullName = '$employeename' AND Action = 'IN'";
 $result = mysqli_query($conn, $sqlcheckemployee);
 
 
 //check if the name is already been registered on database
-$sqlcheckemployee2 = "SELECT Department, Username FROM tb_user WHERE Department = '$companyname' AND Username = '$employeename'";
+$sqlcheckemployee2 = "SELECT Department, FullName FROM tb_user WHERE Department = '$companyname' AND FullName = '$employeename'";
 $result2 = mysqli_query($conn, $sqlcheckemployee2);
 
 if (mysqli_num_rows($result) > 0) {
@@ -223,10 +223,11 @@ icon: "error",
 
 else
 {
-$sql = "insert into tb_user_track(Department, Username, Date, Time_In, Action) values ('$companyname', '$employeename', '$date', '$time', 'IN')";
-
+$sql = "insert into tb_user_track(Department, FullName, Date, Time_In, Action) values ('$companyname', '$employeename', '$date', '$time', 'IN')";
+$lateearly = "UPDATE tb_user_track t1 JOIN tb_user t2 ON t2.FullName = t1.FullName SET t1.Late_EarlyHours = TIMEDIFF(t2.ShiftSchedule, Time_In) WHERE t1.Date = '$date' AND t1.FullName = '$employeename'";
 
 if (mysqli_query($conn, $sql))
+   if (mysqli_query($conn, $lateearly)){
 {
 ?>
 	<script>
@@ -241,6 +242,7 @@ icon: "success"
 	</script>
 
 <?php
+}
 }
 
 else
@@ -265,13 +267,13 @@ $date2 = date('Y-m-d');
 $time2 = date('H:i');
 
 //check if the employee had already clocked in today
-$sqlout = "SELECT Department, Username, Date, Action, Time_Out FROM tb_user_track WHERE Date = '$date2' AND Username = '$employeename2' AND Action = 'IN'";
+$sqlout = "SELECT Department, FullName, Date, Action, Time_Out FROM tb_user_track WHERE Date = '$date2' AND FullName = '$employeename2' AND Action = 'IN'";
 $result = mysqli_query($conn, $sqlout);
 
 if (mysqli_num_rows($result) > 0) {
 
-$sql = "UPDATE tb_user_track SET Time_Out= '$time2', Action = 'OUT' WHERE Date = '$date2' AND Username = '$employeename2' AND ACTION = 'IN'";
-$sqlcalculate  = "UPDATE tb_user_track SET Hours = TIMEDIFF(Time_Out, Time_In) WHERE Date = '$date2' AND Username = '$employeename2' AND ACTION = 'OUT'";
+$sql = "UPDATE tb_user_track SET Time_Out= '$time2', Action = 'OUT' WHERE Date = '$date2' AND FullName = '$employeename2' AND ACTION = 'IN'";
+$sqlcalculate  = "UPDATE tb_user_track SET Hours = TIMEDIFF(Time_Out, Time_In) WHERE Date = '$date2' AND FullName = '$employeename2' AND ACTION = 'OUT'";
 
 if (mysqli_query($conn, $sql))
 {
@@ -326,7 +328,7 @@ $employeename3 = mysqli_real_escape_string($conn, $_POST['employee_name2']);
 $date3 = date('Y-m-d');
 $time3 = date('H:i');
 
-$sql3 = "insert into tb_user_track(Department, Username, Date, Note) values ('$companyname3', '$employeename3', '$date3', '$note')";
+$sql3 = "insert into tb_user_track(Department, FullName, Date, Note) values ('$companyname3', '$employeename3', '$date3', '$note')";
 
 
 if (mysqli_query($conn, $sql3))

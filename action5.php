@@ -8,13 +8,9 @@ $conn = OpenCon();
 if($_POST['action'] == 'edit')
 {
   $User_ID = $_POST['User_ID'];
-  $Department = $_POST['Department'];
-  $Username = $_POST['Username'];
-  $Password = $_POST['Password'];
-  $Usertype = $_POST['Usertype'];
-  $Status = $_POST['Status'];
+  $ShiftSchedule = $_POST['ShiftSchedule'];
 
-  $edit = "update tb_user set Department='$Department', Username='$Username', Password='$Password', Usertype='$Usertype', Status='$Status' where User_ID='$User_ID'";
+  $edit = "update tb_user set ShiftSchedule='$ShiftSchedule' where User_ID='$User_ID'";
   $resultedit = mysqli_query($conn, $edit);
 
  echo json_encode($_POST);

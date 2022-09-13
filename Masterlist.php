@@ -11,6 +11,8 @@ else {
 $value = $_SESSION['Username'];
 }
 
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -96,20 +98,22 @@ footer {
 <!-- Main Dashboard Datatable Headers-->
 <div class="container">
   <div class="row">
-     <div class="col-lg-12">
+     <div>
 		 </br>
-          <table id="empTable" class="table table-striped table-bordered dataTable display nowrap responsive" cellspacing="0" style="width:100%">
+          <table id="empTable" class="table table-striped table-bordered dataTable display compact responsive" cellspacing="0" style="width:100%">
                 <thead>
 
                     <tr>
                       <th>#</th>
-                      <th>EMPLOYEE NO.</th>
-                			<th>FIRSTNAME</th>
-                			<th>MIDDLENAME</th>
-                			<th>LASTNAME</th>
-                			<th>DEPARTMENT</th>
-                			<th>USERNAME</th>
-                      <th>USERTYPE</th>
+                      <th>Emp. No</th>
+											<th>Fullname</th>
+                			<th>Firstname</th>
+                			<th>Lastname</th>
+                			<th>Department</th>
+                			<th>Username</th>
+											<th>Password</th>
+                      <th>Type</th>
+											<th>Status</th>
                     </tr>
 
                  </thead>
@@ -134,6 +138,10 @@ footer {
          'serverSide': true,
          'serverMethod': 'post',
          'searching': true,
+				 lengthMenu: [
+						 [10, 50, 100, 150, 200, 500, 1000, -1],
+						 [10, 50, 100, 150, 200, 500, 1000],
+				 ],
          dom: 'Blfrtip',
          buttons: [
           {
@@ -164,12 +172,14 @@ footer {
          'columns': [
             { data: 'User_ID' },
             { data: 'EmployeeNo' },
+						{ data: 'FullName' },
             { data: 'FirstName' },
-            { data: 'MiddleName' },
             { data: 'LastName' },
             { data: 'Department' },
             { data: 'Username' },
+						{ data: 'Password' },
             { data: 'Usertype' },
+						{ data: 'Status' },
          ]
       });
  $('#empTable').on('draw.dt', function(){
@@ -178,7 +188,7 @@ footer {
   'dataType':'json',
   'columns':{
    'identifier' : [0, "User_ID"],
-   'editable':[[2, "FirstName"], [3, "MiddleName"], [4, "LastName"], [5, "Department"], [6, "Username"], [7, "Usertype"]]
+   'editable':[[5, "Department" , '{"Business Technology": "Business Technology", "Doriana Foods": "Doriana Foods", "Mobelwerke": "Mobelwerke", "Direct Sales": "Direct Sales", "Executive Office": "Executive Office", "Finance and Accounting": "Finance and Accounting", "MPC": "MPC", "Marketing": "Marketing", "Operations": "Operations", "People Management": "People Management", "Property Management": "Property Management", "Purchasing": "Purchasing", "Warehouse": "Warehouse"}'], [6, "Username"], [7, "Password"], [8, "Usertype" , '{"admin": "admin", "user": "user", "head": "head"}'], [9, "Status" , '{"active": "active", "inactive": "inactive"}'],]
  },
 // Set Datepicker when Editing the date
   // onDraw: function() {
@@ -235,5 +245,6 @@ footer {
         	<a href="ADMINdashboard.php" class="ui primary button">Dashboard</a>
         	<a href="ADMINregister2.php" class="ui primary button">Add User</a>
           <a href="Masterlist.php" class="ui primary button">Masterlist</a>
+					<a href="schedule.php" class="ui primary button">Schedule</a>
 				</footer>
    </html>
